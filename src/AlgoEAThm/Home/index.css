@@ -1,0 +1,108 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Container wraps everything and fills the entire screen */
+.algoEAThm-container {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column; /* top-to-bottom layout */
+    box-sizing: border-box;
+}
+
+/* Topbar styling */
+.algoEAThm-topbar {
+    position: relative;       /* Needed for absolute positioning of children */
+    width: 100%;
+    background-color: #f0f0f0;
+    padding: 10px 20px;       /* Padding around top bar content */
+    box-sizing: border-box;
+    height: 75px;            /* Adjust if you want a fixed height */
+}
+
+/* Left Section: absolutely positioned 10% from left */
+.algoEAThm-leftSection {
+    position: absolute;
+    left: 10%;
+    display: flex;           /* Keep logo & title in a row */
+    align-items: center;
+}
+
+/* Right Section: absolutely positioned 10% from right */
+.algoEAThm-rightSection {
+    position: absolute;
+    right: 10%;
+    display: flex;
+    align-items: center;
+}
+
+.algoEAThm-logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.algoEAThm-title {
+    margin-left: 10px;
+}
+
+.algoEAThm-separator {
+    padding: 0 5px;
+}
+  
+/* Main form section
+    Use flex: 1 to push this section to fill the remaining vertical space */
+.algoEAThm-main {
+    width: 100%;
+    min-width: 500px;
+    max-width: 900px;
+    margin: 0 auto;    /* centers the container */
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  
+.algoEAThm-label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.algoEAThm-input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.algoEAThm-generateBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #ff5601; /* Vibrant Orange */
+    font-style: inherit;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.algoEAThm-AuthBtn {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 100%;
+    cursor: pointer;
+    font-style: inherit;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
