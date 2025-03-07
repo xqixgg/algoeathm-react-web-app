@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./index.css";
+import { Link } from "react-router-dom";
 
 
 /**
@@ -55,6 +56,9 @@ const Home: React.FC = () => {
             </button>
         </div>
       </header>
+      
+      {/* Nav back to instruction page delete later */}
+      <Link to="/AlgoEAThm/Instruction">Instruction</Link>
 
       {/* Main Form Section */}
       <main className="algoEAThm-main">

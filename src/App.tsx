@@ -1,6 +1,6 @@
-import { HashRouter } from "react-router-dom";
-import { Routes, Route, Navigate } from "react-router";
-import AlgoEAThm from "./AlgoEAThm/Home";
+import { Routes, Route, HashRouter, Navigate } from "react-router-dom";
+import AlgoEAThm from "./AlgoEAThm";
+
 
 function App() {
   return (
