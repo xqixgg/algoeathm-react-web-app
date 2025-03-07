@@ -1,41 +1,22 @@
-import React, { useState } from "react";
 import "./index.css";
-import { Link } from "react-router-dom";
-
+import { NavLink, useNavigate } from "react-router-dom"; 
+import { useRecipe } from "../store/RecipeContext"; // Import global store
 
 /**
  * Main component for the AI-based recipe generator UI.
  */
 const Home: React.FC = () => {
-  // State for each input
-  const [ingredients, setIngredients] = useState("");
-  const [allergies, setAllergies] = useState("");
-  const [cuisine, setCuisine] = useState("");
-  const [timeLimit, setTimeLimit] = useState("");
+  const { state, dispatch } = useRecipe(); // Use the global store
+  const navigate = useNavigate();
 
-  /**
-   * Handle the "Generate" button click
-   */
-  const handleGenerate = () => {
-    // Split the ingredients by commas
-    const ingredientList = ingredients
-      .split(",")
-      .map((item) => item.trim())
-      .filter((item) => item !== "");
+  
+  const handleInputChange = (type: string, value: string) => {
+    dispatch({ type: type as any, payload: value });
+  };
 
-    // Limit check: no more than 10 ingredients
-    if (ingredientList.length > 10) {
-      alert("You can only enter up to 10 ingredients.");
-      return;
-    }
-
-    // Here, connect to your AI or recipe generation logic:
-    console.log("Ingredients:", ingredientList);
-    console.log("Allergies:", allergies || "None");
-    console.log("Cuisine:", cuisine || "None");
-    console.log("Time Limit:", timeLimit || "None");
-
-    alert("Recipe generation logic goes here!");
+  const handleGenerate = () => {    
+    alert("Generate Recipe logic goes here!");
+    navigate("/AlgoEAThm/Instruction");
   };
 
   const handleAuth = () => {
@@ -57,13 +38,32 @@ const Home: React.FC = () => {
         </div>
       </header>
       
-      {/* Nav back to instruction page delete later */}
-      <Link to="/AlgoEAThm/Instruction">Instruction</Link>
+     
 
       {/* Main Form Section */}
       <main className="algoEAThm-main">
-        <h3>Generate a Recipe</h3>
-
+        <nav className="algoEAThm-tabs">
+          {/* Use NavLink so we can style the active tab */}
+          <NavLink
+            to="/AlgoEAThm"
+            className={({ isActive }) =>
+              isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
+            }
+          >
+            Home
+          </NavLink>
+          <NavLink
+            to="/AlgoEAThm/Instruction"
+            className={({ isActive }) =>
+              isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
+            }
+          >
+            Instruction
+          </NavLink>
+        </nav>
+        <div className="mt-3">
+          <h3>Generate a Recipe</h3>
+        </div>
         <label htmlFor="ingredients" className="algoEAThm-label">
           Ingredients (comma-separated, max 10):
         </label>
@@ -71,11 +71,10 @@ const Home: React.FC = () => {
           id="ingredients"
           type="text"
           placeholder="e.g., tomatoes, pasta, cheese"
-          value={ingredients}
-          onChange={(e) => setIngredients(e.target.value)}
+          value={state.ingredients}
+          onChange={(e) => handleInputChange("SET_INGREDIENTS", e.target.value)}
           className="algoEAThm-input"
         />
-
         <label htmlFor="allergies" className="algoEAThm-label">
           Allergies (optional):
         </label>
@@ -83,8 +82,8 @@ const Home: React.FC = () => {
           id="allergies"
           type="text"
           placeholder="e.g., peanuts"
-          value={allergies}
-          onChange={(e) => setAllergies(e.target.value)}
+          value={state.allergies}
+          onChange={(e) => handleInputChange("SET_ALLERGIES", e.target.value)}
           className="algoEAThm-input"
         />
 
@@ -95,8 +94,8 @@ const Home: React.FC = () => {
           id="cuisine"
           type="text"
           placeholder="e.g., Italian"
-          value={cuisine}
-          onChange={(e) => setCuisine(e.target.value)}
+          value={state.cuisine}
+          onChange={(e) => handleInputChange("SET_CUISINE", e.target.value)}
           className="algoEAThm-input"
         />
 
@@ -107,8 +106,8 @@ const Home: React.FC = () => {
           id="timeLimit"
           type="text"
           placeholder="e.g., 30"
-          value={timeLimit}
-          onChange={(e) => setTimeLimit(e.target.value)}
+          value={state.timeLimit}
+          onChange={(e) => handleInputChange("SET_TIME_LIMIT", e.target.value)}
           className="algoEAThm-input"
         />
 

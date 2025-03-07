@@ -6,7 +6,6 @@
     margin: 100px auto;
     width: 60%;
     padding-bottom: 50px;
-    border: 1px solid black;
     border-bottom: 5px solid black;
     border-top: 0px;
 }
@@ -31,6 +30,10 @@
     
 }
 
+.ins-info {
+    margin: 1rem 0; /* vertical margin top/bottom */
+}
+
 .ins-row{
     display: flex;
     gap: 20px;
@@ -41,13 +44,14 @@
     box-sizing: border-box;
     flex: 1;
     padding: 20px 20px;
-    background-color: lightblue;
+    background-color: #f0f0f0;    
+
 }
 
 .ins-steps{
     box-sizing: border-box;
     flex: 1;
     padding: 20px 20px;
-    background-color: lightpink;
+    background-color: #AFB29C;
 }
 

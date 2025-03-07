@@ -40,6 +40,44 @@ html, body {
     align-items: center;
 }
 
+/********************************************
+  Tab Bar
+*********************************************/
+.algoEAThm-tabs {
+    width: 100%;            /* same width as .algoEAThm-main */
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;          /* reset if needed */
+    /* border-bottom: 2px solid #ccc; a border to separate from main content */
+  }
+  
+  /* The tab links themselves */
+  .algoEAThm-tab {
+    width: 100%;
+    text-decoration: none;
+    color: #333;
+    padding: 10px 20px;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+
+    border-radius: 4px 4px 0 0;
+    transition: background-color 0.2s ease;
+  }
+  
+  .algoEAThm-tab:hover {
+    background-color: #ddd;
+  }
+  
+  /* Active tab gets a distinct style */
+  .algoEAThm-tab-active {
+    background-color: #ffffff;
+    border: 1px solid #ccc;       /* keeps top, left, right border */
+    border-bottom: none;          /* no bottom border */
+    color: #000;
+  }
+  
+
 .algoEAThm-logo {
     width: 50px;
     height: 50px;
@@ -47,6 +85,7 @@ html, body {
 }
 
 .algoEAThm-title {
+    margin-top: 10px;
     margin-left: 10px;
 }
 
@@ -57,16 +96,19 @@ html, body {
 /* Main form section
     Use flex: 1 to push this section to fill the remaining vertical space */
 .algoEAThm-main {
-    width: 100%;
-    min-width: 500px;
-    max-width: 900px;
-    margin: 0 auto;    /* centers the container */
-    padding: 20px;
+    /* width: 100%; */
+    /* min-width: 500px;
+    max-width: 900px;  */
+    margin: 100px auto;
+    width: 60%;
+    /* margin: 0 auto; */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
+
 }
+
   
 .algoEAThm-label {
     display: block;
@@ -94,7 +136,7 @@ html, body {
 }
 
 .algoEAThm-AuthBtn {
-    margin-top: 20px;
+    margin-top: 15px;
     margin-bottom: 20px;
     height: 100%;
     cursor: pointer;
