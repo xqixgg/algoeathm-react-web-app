@@ -6,6 +6,12 @@ interface RecipeState {
   allergies: string;
   cuisine: string;
   timeLimit: string;
+  generatedRecipe?: {
+    name: string;
+    description: string;
+    ingredients: string[];
+    instructions: string[];
+  };
 }
 
 // Define action types
@@ -13,7 +19,8 @@ type RecipeAction =
   | { type: "SET_INGREDIENTS"; payload: string }
   | { type: "SET_ALLERGIES"; payload: string }
   | { type: "SET_CUISINE"; payload: string }
-  | { type: "SET_TIME_LIMIT"; payload: string };
+  | { type: "SET_TIME_LIMIT"; payload: string }
+  | { type: "SET_GENERATED_RECIPE"; payload: any };
 
 // Initial state
 const initialState: RecipeState = {
@@ -24,7 +31,10 @@ const initialState: RecipeState = {
 };
 
 // Reducer function to handle state changes
-const recipeReducer = (state: RecipeState, action: RecipeAction): RecipeState => {
+const recipeReducer = (
+  state: RecipeState,
+  action: RecipeAction
+): RecipeState => {
   switch (action.type) {
     case "SET_INGREDIENTS":
       return { ...state, ingredients: action.payload };
@@ -34,6 +44,8 @@ const recipeReducer = (state: RecipeState, action: RecipeAction): RecipeState =>
       return { ...state, cuisine: action.payload };
     case "SET_TIME_LIMIT":
       return { ...state, timeLimit: action.payload };
+    case "SET_GENERATED_RECIPE":
+      return { ...state, generatedRecipe: action.payload };
     default:
       return state;
   }
@@ -45,7 +57,9 @@ const RecipeContext = createContext<
 >(undefined);
 
 // Context Provider Component
-export const RecipeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const RecipeProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(recipeReducer, initialState);
 
   return (
