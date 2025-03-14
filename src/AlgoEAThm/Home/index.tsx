@@ -1,6 +1,8 @@
 import "./index.css";
-import { NavLink, useNavigate } from "react-router-dom"; 
+import { NavLink, useNavigate } from "react-router-dom";
 import { useRecipe } from "../store/RecipeContext"; // Import global store
+import axios from 'axios';
+import { useState } from "react";
 
 /**
  * Main component for the AI-based recipe generator UI.
@@ -8,15 +10,73 @@ import { useRecipe } from "../store/RecipeContext"; // Import global store
 const Home: React.FC = () => {
   const { state, dispatch } = useRecipe(); // Use the global store
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  
   const handleInputChange = (type: string, value: string) => {
     dispatch({ type: type as any, payload: value });
   };
 
-  const handleGenerate = () => {    
-    alert("Generate Recipe logic goes here!");
-    navigate("/AlgoEAThm/Instruction");
+  const handleGenerate = async () => {
+    if (!state.ingredients) {
+      alert("Please enter at least one ingredient");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const ingredients = state.ingredients.split(',').map(i => i.trim());
+      console.log('Sending ingredients:', ingredients);
+      
+      const response = await axios.post('http://localhost:3000/recipe', 
+        { ingredients: ingredients },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: false,
+        }
+      );
+
+      console.log('API Response:', response.data);
+
+      if (response.data.recipe && response.data.recipe.parts) {
+        const recipeText = response.data.recipe.parts[0].text;
+        console.log('Recipe Text:', recipeText);
+        
+        const lines = recipeText.split('\n').filter(line => line.trim());
+        console.log('Parsed Lines:', lines);
+        
+        // Parse the markdown formatted response
+        const recipe = {
+          name: lines[0].replace('##', '').trim(),
+          description: lines[1] || '',
+          ingredients: lines.filter(line => line.startsWith('*')).map(line => line.replace('*', '').trim()),
+          instructions: lines.filter(line => /^\d+\./.test(line)).map(line => line.replace(/^\d+\./, '').trim())
+        };
+
+        console.log('Parsed Recipe:', recipe);
+        dispatch({ type: 'SET_GENERATED_RECIPE', payload: recipe });
+        navigate("/AlgoEAThm/Instruction");
+      } else {
+        setError('No recipe was generated. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Error details:', error);
+      let errorMessage = 'Failed to generate recipe. Please try again.';
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAuth = () => {
@@ -32,13 +92,11 @@ const Home: React.FC = () => {
           <h2 className="algoEAThm-title">AlgoEAThm</h2>
         </div>
         <div className="algoEAThm-rightSection">
-            <button onClick={handleAuth} className="algoEAThm-AuthBtn">
-                Login/Register
-            </button>
+          <button onClick={handleAuth} className="algoEAThm-AuthBtn">
+            Login/Register
+          </button>
         </div>
       </header>
-      
-     
 
       {/* Main Form Section */}
       <main className="algoEAThm-main">
@@ -111,8 +169,14 @@ const Home: React.FC = () => {
           className="algoEAThm-input"
         />
 
-        <button onClick={handleGenerate} className="algoEAThm-generateBtn">
-          Generate
+        {error && <div className="error-message">{error}</div>}
+        
+        <button 
+          onClick={handleGenerate} 
+          className="algoEAThm-generateBtn"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Generating...' : 'Generate'}
         </button>
       </main>
     </div>
