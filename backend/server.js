@@ -27,8 +27,13 @@ app.post("/recipe", async (req, res) => {
   res.header("Access-Control-Allow-Credentials", "true");
 
   try {
-    const { ingredients } = req.body;
-    console.log("Received ingredients:", ingredients);
+    const { ingredients, allergies, cuisine, timeLimit } = req.body;
+    console.log("Received data:", {
+      ingredients,
+      allergies,
+      cuisine,
+      timeLimit,
+    });
 
     if (!ingredients || ingredients.length === 0) {
       return res
@@ -41,9 +46,12 @@ app.post("/recipe", async (req, res) => {
       return res.status(500).json({ error: "API key not configured" });
     }
 
-    const promptText = `Please generate a simple and easy-to-make recipe using the following ingredients: ${ingredients.join(
-      ", "
-    )}. Provide the dish name, required ingredients, and steps.`;
+    const promptText = `Please generate a simple and easy-to-make recipe using the following parameters:
+    Ingredients: ${ingredients.join(", ")}
+    ${allergies ? `Allergies to avoid: ${allergies}` : ""}
+    ${cuisine ? `Preferred cuisine: ${cuisine}` : ""}
+    ${timeLimit ? `Time limit: ${timeLimit} minutes` : ""}
+    Please provide the dish name, required ingredients, and steps.`;
 
     console.log("Making request to Google AI API with prompt:", promptText);
     const response = await axios.post(
