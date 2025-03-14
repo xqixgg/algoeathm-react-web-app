@@ -1,54 +1,99 @@
-# React + TypeScript + Vite
+# AlgoEAThm
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Starting the Application
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Backend Server
+```bash
+cd backend
+node server.js
 ```
+_Expected output: "Server running on port 3000"_
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Frontend
+```bash
+cd ..  # Return to root directory
+npm run dev
 ```
+_Visit: [http://localhost:5173](http://localhost:5173)_
+
+## How to Use AlgoEAThm
+
+### Home Page
+The home page contains a form with four input fields:
+
+1. **Ingredients (Required)**  
+   - Enter ingredients you have, separated by commas  
+   - Example: `chicken, rice, tomatoes`  
+   - Max: 10 ingredients  
+   - Be specific (e.g., `chicken breast` instead of `chicken`)
+
+2. **Allergies (Optional)**  
+   - List allergens to exclude (e.g., `peanuts, shellfish`)
+
+3. **Cuisine Type (Optional)**  
+   - Specify a preferred cuisine (e.g., `Italian`, `Mexican`)
+
+4. **Time Limit (Optional)**  
+   - Enter max cooking time in minutes (e.g., `30`)
+
+### Generating a Recipe
+1. Fill in at least the **Ingredients** field
+2. Click **Generate**
+3. Wait 5-10 seconds while the AI creates a recipe
+4. You'll be redirected to the **Instructions** page
+
+### Instructions Page
+- Recipe name and description at the top
+- Ingredients list on the left
+- Step-by-step cooking instructions on the right
+- Your preferences (allergies, cuisine, time) displayed
+
+### Recipe Format
+Generated recipes include:
+- A descriptive title
+- Ingredients with approximate quantities
+- Numbered cooking steps
+- Estimated cooking time
+- Serving suggestions (if applicable)
+
+## Troubleshooting
+
+### "No API Key Found" Error
+- Ensure `backend/.env` contains a valid Google AI API key
+- Verify API access to the Gemini model
+
+### Connection Errors
+- Ensure both frontend and backend servers are running
+- Check if ports `3000` and `5173` are available
+- Verify internet connectivity
+
+### Recipe Generation Issues
+- Ensure ingredients are comma-separated
+- Max ingredients: 10
+- Refresh and try again if needed
+
+### No Recipe Displayed
+- Enter at least one ingredient
+- Check browser console for errors
+- Review backend server logs
+
+## Technical Stack
+- **Frontend:** React + TypeScript + Vite
+- **Backend:** Express.js
+- **AI:** Google Gemini AI API
+- **State Management:** React Context
+- **Styling:** Custom CSS
+
+## Future Features
+- Save favorite recipes
+- User accounts
+- Share recipes
+- Custom recipe collections
+- Dietary preference profiles
+
+## Support
+For help:
+1. Check **Troubleshooting**
+2. Review **Console Logs**
+3. Submit an issue on **GitHub**
+
