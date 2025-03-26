@@ -3,16 +3,15 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useRecipe } from "../store/RecipeContext"; // Import global store
 import axios from 'axios';
 import { useState } from "react";
+import Header from "../Header";
 
-/**
- * Main component for the AI-based recipe generator UI.
- */
 const Home: React.FC = () => {
   const { state, dispatch } = useRecipe(); // Use the global store
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  // const [currentUser, setCurrentUser] = useState(null);
+  // const [username, setUsername] = useState("");
   const handleInputChange = (type: string, value: string) => {
     dispatch({ type: type as any, payload: value });
   };
@@ -28,37 +27,50 @@ const Home: React.FC = () => {
 
     try {
       const ingredients = state.ingredients.split(',').map(i => i.trim());
-      console.log('Sending ingredients:', ingredients);
+      const cuisine = state.cuisine?.trim() || "";
+      const allergies = state.allergies?.trim() || "";
+      const timeLimit = state.timeLimit?.trim() || "";
       
-      const response = await axios.post('http://localhost:3000/recipe', 
-        { ingredients: ingredients },
+      console.log("Sending API request with:", {
+        ingredients,
+        cuisine,
+        allergies,
+        timeLimit
+      });
+      
+      const response = await axios.post(
+        "http://localhost:3000/recipe",
+        { ingredients, cuisine, allergies, timeLimit },
         {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { "Content-Type": "application/json" },
           withCredentials: false,
         }
       );
 
+
       console.log('API Response:', response.data);
 
-      if (response.data.recipe && response.data.recipe.parts) {
-        const recipeText = response.data.recipe.parts[0].text;
-        console.log('Recipe Text:', recipeText);
-        
-        const lines = recipeText.split('\n').filter(line => line.trim());
-        console.log('Parsed Lines:', lines);
-        
-        // Parse the markdown formatted response
-        const recipe = {
-          name: lines[0].replace('##', '').trim(),
-          description: lines[1] || '',
-          ingredients: lines.filter(line => line.startsWith('*')).map(line => line.replace('*', '').trim()),
-          instructions: lines.filter(line => /^\d+\./.test(line)).map(line => line.replace(/^\d+\./, '').trim())
+      if (response.data.recipe) {
+        const {
+          name = "",
+          description = "",
+          ingredients: apiIngredients,
+          instructions: apiInstructions,
+        } = response.data.recipe;
+
+        const parsedRecipe = {
+          name: name?.trim() || "Unnamed Dish",
+          description: description?.trim() || "No description provided.",
+          ingredients: Array.isArray(apiIngredients) && apiIngredients.length > 0
+            ? apiIngredients.map(ing => ing.trim())
+            : ["No ingredients provided."],
+          instructions: Array.isArray(apiInstructions) && apiInstructions.length > 0
+            ? apiInstructions.map(step => step.trim())
+            : ["No instructions provided."],
         };
 
-        console.log('Parsed Recipe:', recipe);
-        dispatch({ type: 'SET_GENERATED_RECIPE', payload: recipe });
+        console.log('Parsed Recipe:', parsedRecipe);
+        dispatch({ type: 'SET_GENERATED_RECIPE', payload: parsedRecipe });
         navigate("/AlgoEAThm/Instruction");
       } else {
         setError('No recipe was generated. Please try again.');
@@ -79,24 +91,30 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleAuth = () => {
-    alert("Login/Register logic goes here!");
-  };
-
+  // const handleAuth = () => {
+  //   navigate("/AlgoEAThm/login");
+  // };
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
+  //     if (user) {
+  //       setCurrentUser(user);
+  //       const docRef = doc(db, "users", user.uid);
+  //       const docSnap = await getDoc(docRef);
+  //       if (docSnap.exists()) {
+  //         setUsername(docSnap.data().username || user.email);
+  //       }
+  //     } else {
+  //       setCurrentUser(null);
+  //       setUsername("");
+  //     }
+  //   });
+  
+  //   return () => unsubscribe();
+  // }, []);
   return (
     <div className="algoEAThm-container">
       {/* Top Bar */}
-      <header className="algoEAThm-topbar">
-        <div className="algoEAThm-leftSection">
-          <img src="5500.png" alt="AlgoEAThm Logo" className="algoEAThm-logo" />
-          <h2 className="algoEAThm-title">AlgoEAThm</h2>
-        </div>
-        <div className="algoEAThm-rightSection">
-          <button onClick={handleAuth} className="algoEAThm-AuthBtn">
-            Login/Register
-          </button>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Form Section */}
       <main className="algoEAThm-main">

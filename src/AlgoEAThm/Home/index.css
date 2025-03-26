@@ -138,6 +138,7 @@ html, body {
 .algoEAThm-AuthBtn {
     margin-top: 15px;
     margin-bottom: 20px;
+    margin-right: 15px;
     height: 100%;
     cursor: pointer;
     font-style: inherit;
@@ -147,4 +148,12 @@ html, body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+
+.welcome-text {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    height: 100%;
+    font-size: 18px;
+    margin-right: 15px;
 }
