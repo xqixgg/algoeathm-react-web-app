@@ -1,13 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./index.css";
 import { useRecipe } from "../store/RecipeContext"; // Import global state
 import React from "react";
+import Header from "../Header";
+
 
 export default function Instruction() {
   const { state } = useRecipe();
+  const navigate = useNavigate();
 
   const handleAuth = () => {
-    alert("Login/Register logic goes here!");
+    navigate("/AlgoEAThm/login");
   };
 
   const capitalizeFirst = (text: string) => {
@@ -22,17 +25,7 @@ export default function Instruction() {
   return (
     <div className="algoEAThm-container">
       {/* Top Bar */}
-      <header className="algoEAThm-topbar">
-        <div className="algoEAThm-leftSection">
-          <img src="5500.png" alt="AlgoEAThm Logo" className="algoEAThm-logo" />
-          <h2 className="algoEAThm-title">AlgoEAThm</h2>
-        </div>
-        <div className="algoEAThm-rightSection">
-          <button onClick={handleAuth} className="algoEAThm-AuthBtn">
-            Login/Register
-          </button>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Form Section */}
       <div className="ins-container">
@@ -103,9 +96,9 @@ export default function Instruction() {
             </ul>
           </div>
         </div>
-        <div className="ins-row">
+        <div className="ins-row align-items-center justify-content-center">
           <button onClick={handleSave} className="algoEAThm-generateBtn">
-            Save to my list
+            Save to My Recipes
           </button>
         </div>
       </div>
