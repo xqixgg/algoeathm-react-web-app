@@ -27,9 +27,11 @@ app.post("/recipe", async (req, res) => {
   res.header("Access-Control-Allow-Credentials", "true");
 
   try {
+
     // const { ingredients } = req.body;
     // console.log("Received ingredients:", ingredients);
     const { ingredients = [], cuisine = "", allergies = "", timeLimit = "" } = req.body;
+
 
     console.log("Received request:", { ingredients, cuisine, allergies, timeLimit });
     if (!ingredients || ingredients.length === 0) {

@@ -1,7 +1,7 @@
 import "./index.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRecipe } from "../store/RecipeContext"; // Import global store
-import axios from 'axios';
+import axios from "axios";
 import { useState } from "react";
 import Header from "../Header";
 
@@ -73,18 +73,18 @@ const Home: React.FC = () => {
         dispatch({ type: 'SET_GENERATED_RECIPE', payload: parsedRecipe });
         navigate("/AlgoEAThm/Instruction");
       } else {
-        setError('No recipe was generated. Please try again.');
+        setError("No recipe was generated. Please try again.");
       }
     } catch (error: any) {
-      console.error('Error details:', error);
-      let errorMessage = 'Failed to generate recipe. Please try again.';
-      
+      console.error("Error details:", error);
+      let errorMessage = "Failed to generate recipe. Please try again.";
+
       if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -188,13 +188,13 @@ const Home: React.FC = () => {
         />
 
         {error && <div className="error-message">{error}</div>}
-        
-        <button 
-          onClick={handleGenerate} 
+
+        <button
+          onClick={handleGenerate}
           className="algoEAThm-generateBtn"
           disabled={isLoading}
         >
-          {isLoading ? 'Generating...' : 'Generate'}
+          {isLoading ? "Generating..." : "Generate"}
         </button>
       </main>
     </div>
