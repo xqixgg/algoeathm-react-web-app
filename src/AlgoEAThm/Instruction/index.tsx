@@ -1,13 +1,17 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./index.css";
 import { useRecipe } from "../store/RecipeContext"; // Import global state
-import React from "react";
+import React, { useState } from "react";
 import Header from "../Header";
-
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "../../firebase";
 
 export default function Instruction() {
   const { state } = useRecipe();
   const navigate = useNavigate();
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   const handleAuth = () => {
     navigate("/AlgoEAThm/login");
@@ -18,8 +22,52 @@ export default function Instruction() {
     return text.charAt(0).toUpperCase() + text.slice(1);
   };
 
-  const handleSave = () => {
-    alert("Save logic goes here!");
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+    setSaveError("");
+
+    try {
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        // User is not logged in, redirect to login
+        navigate("/AlgoEAThm/login");
+        return;
+      }
+
+      if (!state.generatedRecipe) {
+        setSaveError("No recipe to save");
+        setIsSaving(false);
+        return;
+      }
+
+      // Create recipe JSON data
+      const recipeData = {
+        userId: currentUser.uid,
+        name: state.generatedRecipe.name,
+        description: state.generatedRecipe.description,
+        ingredients: state.generatedRecipe.ingredients,
+        instructions: state.generatedRecipe.instructions,
+        allergies: state.allergies,
+        cuisine: state.cuisine,
+        timeLimit: state.timeLimit,
+        createdAt: serverTimestamp(),
+      };
+
+      // Save recipe to userRecipes collection with generated ID
+      await addDoc(collection(db, "userRecipes"), recipeData);
+
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
+    } catch (err) {
+      console.error("Error saving recipe:", err);
+      setSaveError("Failed to save recipe. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -48,13 +96,23 @@ export default function Instruction() {
           >
             Instruction
           </NavLink>
+          <NavLink
+            to="/AlgoEAThm/saved-recipes"
+            className={({ isActive }) =>
+              isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
+            }
+          >
+            Saved Recipes
+          </NavLink>
         </nav>
         <div className="ins-topbar">
           <h3>{state.generatedRecipe?.name || "Name of the recipe"}</h3>
         </div>
         <div className="ins-description-box">
           <p className="ins-title">Description</p>
-          <p>{state.generatedRecipe?.description || "No description available"}</p>
+          <p>
+            {state.generatedRecipe?.description || "No description available"}
+          </p>
         </div>
         <div className="ins-row">
           <div className="ins-ingredients">
@@ -97,9 +155,24 @@ export default function Instruction() {
           </div>
         </div>
         <div className="ins-row align-items-center justify-content-center">
-          <button onClick={handleSave} className="algoEAThm-generateBtn">
-            Save to My Recipes
+          <button
+            onClick={handleSave}
+            className={`algoEAThm-generateBtn ${isSaving ? "disabled" : ""}`}
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving..." : "Save to My Recipes"}
           </button>
+
+          {saveSuccess && (
+            <div className="save-success-message">
+              Recipe saved successfully!{" "}
+              <NavLink to="/AlgoEAThm/saved-recipes">
+                View saved recipes
+              </NavLink>
+            </div>
+          )}
+
+          {saveError && <div className="save-error-message">{saveError}</div>}
         </div>
       </div>
     </div>

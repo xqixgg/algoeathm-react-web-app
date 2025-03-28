@@ -32,8 +32,8 @@ const Header: React.FC = () => {
   };
 
   const handleMyRecipes = () => {
-    alert("My Recipes logic goes here!");
-  }
+    navigate("/AlgoEAThm/saved-recipes");
+  };
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -55,7 +55,9 @@ const Header: React.FC = () => {
         {currentUser ? (
           <>
             <span className="welcome-text">Welcome, {username}!</span>
-            <button className="algoEAThm-AuthBtn" onClick={handleMyRecipes}>My Recipes</button>
+            <button className="algoEAThm-AuthBtn" onClick={handleMyRecipes}>
+              My Recipes
+            </button>
             <button className="algoEAThm-AuthBtn" onClick={handleLogout}>
               Logout
             </button>
