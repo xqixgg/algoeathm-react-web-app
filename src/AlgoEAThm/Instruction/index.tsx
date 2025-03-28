@@ -5,13 +5,35 @@ import React, { useState } from "react";
 import Header from "../Header";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../../firebase";
-
+import { useEffect } from "react";
+import { getDocs, query, where } from "firebase/firestore";
 export default function Instruction() {
   const { state } = useRecipe();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [isAlreadySaved, setIsAlreadySaved] = useState(false);
+
+  useEffect(() => {
+    const checkIfRecipeIsSaved = async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser || !state.generatedRecipe) return;
+  
+      const userRecipesRef = collection(db, "userRecipes");
+      const q = query(
+        userRecipesRef,
+        where("userId", "==", currentUser.uid),
+        where("name", "==", state.generatedRecipe.name) // or match a hash/ID if you have one
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        setIsAlreadySaved(true);
+      }
+    };
+  
+    checkIfRecipeIsSaved();
+  }, [state.generatedRecipe]);
 
   const handleAuth = () => {
     navigate("/AlgoEAThm/login");
@@ -32,7 +54,7 @@ export default function Instruction() {
 
       if (!currentUser) {
         // User is not logged in, redirect to login
-        navigate("/AlgoEAThm/login");
+        alert("Please log in to save recipes");
         return;
       }
 
@@ -59,9 +81,10 @@ export default function Instruction() {
       await addDoc(collection(db, "userRecipes"), recipeData);
 
       setSaveSuccess(true);
-      setTimeout(() => {
-        setSaveSuccess(false);
-      }, 3000);
+      setIsAlreadySaved(true);
+      // setTimeout(() => {
+      //   setSaveSuccess(false);
+      // }, 3000);
     } catch (err) {
       console.error("Error saving recipe:", err);
       setSaveError("Failed to save recipe. Please try again.");
@@ -155,13 +178,17 @@ export default function Instruction() {
           </div>
         </div>
         <div className="ins-row align-items-center justify-content-center">
-          <button
-            onClick={handleSave}
-            className={`algoEAThm-generateBtn ${isSaving ? "disabled" : ""}`}
-            disabled={isSaving}
-          >
-            {isSaving ? "Saving..." : "Save to My Recipes"}
-          </button>
+        <button
+          onClick={handleSave}
+          className={`algoEAThm-generateBtn ${isSaving || isAlreadySaved ? "disabled" : ""}`}
+          disabled={isSaving || isAlreadySaved}
+        >
+          {isSaving
+            ? "Saving..."
+            : isAlreadySaved
+            ? "Saved to Recipes"
+            : "Save to My Recipes"}
+        </button>
 
           {saveSuccess && (
             <div className="save-success-message">

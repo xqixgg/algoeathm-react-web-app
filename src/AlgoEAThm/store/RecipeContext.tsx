@@ -20,7 +20,8 @@ type RecipeAction =
   | { type: "SET_ALLERGIES"; payload: string }
   | { type: "SET_CUISINE"; payload: string }
   | { type: "SET_TIME_LIMIT"; payload: string }
-  | { type: "SET_GENERATED_RECIPE"; payload: any };
+  | { type: "SET_GENERATED_RECIPE"; payload: any }
+  | { type: "RESET" };
 
 // Initial state
 const initialState: RecipeState = {
@@ -46,6 +47,8 @@ const recipeReducer = (
       return { ...state, timeLimit: action.payload };
     case "SET_GENERATED_RECIPE":
       return { ...state, generatedRecipe: action.payload };
+    case "RESET":
+      return initialState;  
     default:
       return state;
   }

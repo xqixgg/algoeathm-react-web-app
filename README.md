@@ -79,7 +79,8 @@ Generated recipes include:
 
 ## Technical Stack
 - **Frontend:** React + TypeScript + Vite
-- **Backend:** Express.js
+- **Backend:** Express.js + Node.js
+- **Database:** Firebase
 - **AI:** Google Gemini AI API
 - **State Management:** React Context
 - **Styling:** Custom CSS

@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import { useRecipe } from "../store/RecipeContext";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
   const [username, setUsername] = useState("");
+  const { dispatch } = useRecipe();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -31,17 +33,15 @@ const Header: React.FC = () => {
     navigate("/AlgoEAThm/login");
   };
 
-  const handleMyRecipes = () => {
-    navigate("/AlgoEAThm/saved-recipes");
-  };
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
     if (confirmLogout) {
+      dispatch({ type: "RESET" });
       await signOut(auth);
       setCurrentUser(null);
       setUsername("");
-      navigate("/AlgoEAThm/login");
+      navigate("/AlgoEAThm");
     }
   };
 
@@ -55,9 +55,6 @@ const Header: React.FC = () => {
         {currentUser ? (
           <>
             <span className="welcome-text">Welcome, {username}!</span>
-            <button className="algoEAThm-AuthBtn" onClick={handleMyRecipes}>
-              My Recipes
-            </button>
             <button className="algoEAThm-AuthBtn" onClick={handleLogout}>
               Logout
             </button>

@@ -96,11 +96,12 @@ html, body {
 /* Main form section
     Use flex: 1 to push this section to fill the remaining vertical space */
 .algoEAThm-main {
-    /* width: 100%; */
+    width: 100%;
     /* min-width: 500px;
     max-width: 900px;  */
     margin: 100px auto;
-    width: 60%;
+    max-width: 1200px;
+    padding: 20px;
     /* margin: 0 auto; */
     box-sizing: border-box;
     display: flex;

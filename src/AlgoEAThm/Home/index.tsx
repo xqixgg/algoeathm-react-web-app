@@ -91,26 +91,6 @@ const Home: React.FC = () => {
     }
   };
 
-  // const handleAuth = () => {
-  //   navigate("/AlgoEAThm/login");
-  // };
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
-  //     if (user) {
-  //       setCurrentUser(user);
-  //       const docRef = doc(db, "users", user.uid);
-  //       const docSnap = await getDoc(docRef);
-  //       if (docSnap.exists()) {
-  //         setUsername(docSnap.data().username || user.email);
-  //       }
-  //     } else {
-  //       setCurrentUser(null);
-  //       setUsername("");
-  //     }
-  //   });
-  
-  //   return () => unsubscribe();
-  // }, []);
   return (
     <div className="algoEAThm-container">
       {/* Top Bar */}
@@ -135,6 +115,14 @@ const Home: React.FC = () => {
             }
           >
             Instruction
+          </NavLink>
+          <NavLink
+            to="/AlgoEAThm/saved-recipes"
+            className={({ isActive }) =>
+              isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
+            }
+          >
+            Saved Recipes
           </NavLink>
         </nav>
         <div className="mt-3">

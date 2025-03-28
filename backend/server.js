@@ -81,7 +81,8 @@ app.post("/recipe", async (req, res) => {
       promptText += ` Make sure it can be prepared within ${timeLimit} minutes.`;
     }
 
-    promptText += ` Keep the response clean and structured without unnecessary formatting symbols like * or -.`;
+    // promptText += ` Keep the response clean and structured without unnecessary formatting symbols like * or -.`;
+    promptText += ` Keep the response clean and structured. For the instructions, do NOT use numbering (e.g., 1., 2., etc.) or bullet points. Write each step as a new line without any prefix.`;
 
     console.log("Making request to Google AI API with prompt:", promptText);
 

@@ -4,7 +4,9 @@
   align-items: center;
   justify-content: center;
   margin: 100px auto;
-  width: 60%;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
   padding-bottom: 50px;
   border-bottom: 5px solid black;
   border-top: 0px;
