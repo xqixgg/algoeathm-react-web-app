@@ -7,8 +7,10 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import { useEffect } from "react";
 import { getDocs, query, where } from "firebase/firestore";
+import axios from "axios";
+
 export default function Instruction() {
-  const { state } = useRecipe();
+  const { state, dispatch } = useRecipe();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -92,6 +94,25 @@ export default function Instruction() {
       setIsSaving(false);
     }
   };
+  const handleRefresh = async () => {
+    const ingredients = state.ingredients?.split(",").map(i => i.trim());
+    if (!ingredients || ingredients.length === 0) {
+      alert("No ingredients to refresh with.");
+      return;
+    }
+  
+    try {
+      const res = await axios.post("http://localhost:3000/recipe", {
+        ingredients
+      });
+  
+      dispatch({ type: "SET_GENERATED_RECIPE", payload: res.data.recipe });
+    } catch (err) {
+      alert("Failed to refresh recipe.");
+      console.error(err);
+    }
+  };
+  
 
   return (
     <div className="algoEAThm-container">
@@ -189,6 +210,20 @@ export default function Instruction() {
             ? "Saved to Recipes"
             : "Save to My Recipes"}
         </button>
+
+        <button
+    onClick={handleRefresh}
+    style={{
+      marginTop: "1rem",
+      padding: "10px 20px",
+      borderRadius: "8px",
+      backgroundColor: "#f0f0f0",
+      border: "none",
+      cursor: "pointer"
+    }}
+  >
+    🔄 Refresh Recipe
+  </button>
 
           {saveSuccess && (
             <div className="save-success-message">
