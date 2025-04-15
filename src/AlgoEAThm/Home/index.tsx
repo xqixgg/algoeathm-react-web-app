@@ -5,6 +5,7 @@ import axios from "axios";
 import { useState } from "react";
 import Header from "../Header";
 
+
 const Home: React.FC = () => {
   const { state, dispatch } = useRecipe(); // Use the global store
   const navigate = useNavigate();
@@ -184,6 +185,8 @@ const Home: React.FC = () => {
         >
           {isLoading ? "Generating..." : "Generate"}
         </button>
+
+        
       </main>
     </div>
   );
