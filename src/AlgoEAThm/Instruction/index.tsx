@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./index.css";
-import { useRecipe } from "../store/RecipeContext"; // Import global state
+import { useRecipe } from "../store/RecipeContext"; 
 import React, { useState } from "react";
 import Header from "../Header";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -24,7 +24,7 @@ export default function Instruction() {
       const q = query(
         userRecipesRef,
         where("userId", "==", currentUser.uid),
-        where("name", "==", state.generatedRecipe.name) // or match a hash/ID if you have one
+        where("name", "==", state.generatedRecipe.name) 
       );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
