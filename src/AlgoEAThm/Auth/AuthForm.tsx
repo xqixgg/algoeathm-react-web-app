@@ -21,6 +21,14 @@ export default function AuthForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     if (!isLogin && password !== confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -49,6 +57,10 @@ export default function AuthForm() {
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
+  };
+
+  const handleContinueWithoutLogin = () => {
+    navigate("/AlgoEAThm");
   };
 
   return (
@@ -115,15 +127,28 @@ export default function AuthForm() {
         </button>
       </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {isLogin
-        ? "------------ NEW TO ALGOEATHM? -----------"
-        : "--------- ALREADY WITH ALGOEATHM? --------"}{" "}
-      <button
-        className="algoEAThm-generateBtn mb-3 min-w-400"
-        onClick={() => setIsLogin(!isLogin)}
-      >
-        {isLogin ? "Register" : "Login"}
-      </button>
+      <div className="auth-options">
+        <div className="toggle-option">
+          {isLogin
+            ? "------------ NEW TO ALGOEATHM? -----------"
+            : "--------- ALREADY WITH ALGOEATHM? --------"}{" "}
+          <button
+            className="algoEAThm-generateBtn mb-3 min-w-400"
+            onClick={() => setIsLogin(!isLogin)}
+          >
+            {isLogin ? "Register" : "Login"}
+          </button>
+        </div>
+        <div className="continue-option">
+          <p>-------- OR CONTINUE WITHOUT LOGIN --------</p>
+          <button
+            className="algoEAThm-generateBtn mb-3 min-w-400 continue-without-login"
+            onClick={handleContinueWithoutLogin}
+          >
+            Continue Without Login
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -29,19 +29,19 @@ const Home: React.FC = () => {
     try {
       const ingredients = state.ingredients.split(',').map(i => i.trim());
       const cuisine = state.cuisine?.trim() || "";
-      const allergies = state.allergies?.trim() || "";
+      const excludes = state.allergies?.split(',').map(i => i.trim()) || [];
       const timeLimit = state.timeLimit?.trim() || "";
       
       console.log("Sending API request with:", {
         ingredients,
         cuisine,
-        allergies,
+        excludes,
         timeLimit
       });
       
       const response = await axios.post(
         "http://localhost:3000/recipe",
-        { ingredients, cuisine, allergies, timeLimit },
+        { ingredients, cuisine, excludes, timeLimit },
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: false,
@@ -141,12 +141,12 @@ const Home: React.FC = () => {
           className="algoEAThm-input"
         />
         <label htmlFor="allergies" className="algoEAThm-label">
-          Allergies (optional):
+          Excludes (comma-separated, max 10):
         </label>
         <input
           id="allergies"
           type="text"
-          placeholder="e.g., peanuts"
+          placeholder="e.g., peanuts, dairy, gluten"
           value={state.allergies}
           onChange={(e) => handleInputChange("SET_ALLERGIES", e.target.value)}
           className="algoEAThm-input"

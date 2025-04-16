@@ -4,7 +4,7 @@ import { useRecipe } from "../store/RecipeContext";
 import React, { useState } from "react";
 import Header from "../Header";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "../../firebase";
+import { db, auth } from "../../firebase/config";
 import { useEffect } from "react";
 import { getDocs, query, where } from "firebase/firestore";
 import axios from "axios";
@@ -16,11 +16,15 @@ export default function Instruction() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [isAlreadySaved, setIsAlreadySaved] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const checkIfRecipeIsSaved = async () => {
       const currentUser = auth.currentUser;
-      if (!currentUser || !state.generatedRecipe) return;
+      if (!currentUser || !state.generatedRecipe) {
+        setIsAlreadySaved(false);
+        return;
+      }
   
       const userRecipesRef = collection(db, "userRecipes");
       const q = query(
@@ -29,9 +33,7 @@ export default function Instruction() {
         where("name", "==", state.generatedRecipe.name) 
       );
       const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        setIsAlreadySaved(true);
-      }
+      setIsAlreadySaved(!querySnapshot.empty);
     };
   
     checkIfRecipeIsSaved();
@@ -55,13 +57,27 @@ export default function Instruction() {
       const currentUser = auth.currentUser;
 
       if (!currentUser) {
-        // User is not logged in, redirect to login
         alert("Please log in to save recipes");
         return;
       }
 
       if (!state.generatedRecipe) {
         setSaveError("No recipe to save");
+        setIsSaving(false);
+        return;
+      }
+
+      // Check if recipe is already saved
+      const userRecipesRef = collection(db, "userRecipes");
+      const q = query(
+        userRecipesRef,
+        where("userId", "==", currentUser.uid),
+        where("name", "==", state.generatedRecipe.name)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        setSaveError("This recipe is already saved");
         setIsSaving(false);
         return;
       }
@@ -84,9 +100,6 @@ export default function Instruction() {
 
       setSaveSuccess(true);
       setIsAlreadySaved(true);
-      // setTimeout(() => {
-      //   setSaveSuccess(false);
-      // }, 3000);
     } catch (err) {
       console.error("Error saving recipe:", err);
       setSaveError("Failed to save recipe. Please try again.");
@@ -94,6 +107,7 @@ export default function Instruction() {
       setIsSaving(false);
     }
   };
+
   const handleRefresh = async () => {
     const ingredients = state.ingredients?.split(",").map(i => i.trim());
     if (!ingredients || ingredients.length === 0) {
@@ -102,14 +116,19 @@ export default function Instruction() {
     }
   
     try {
+      setIsRefreshing(true);
+      setIsAlreadySaved(false); // Reset saved state when refreshing
       const res = await axios.post("http://localhost:3000/recipe", {
-        ingredients
+        ingredients,
+        timestamp: Date.now()
       });
   
       dispatch({ type: "SET_GENERATED_RECIPE", payload: res.data.recipe });
     } catch (err) {
       alert("Failed to refresh recipe.");
       console.error(err);
+    } finally {
+      setIsRefreshing(false);
     }
   };
   
@@ -163,7 +182,7 @@ export default function Instruction() {
             <p>Ingredients list</p>
             <ul>
               {state.generatedRecipe?.ingredients?.length ? (
-                state.generatedRecipe.ingredients.map((item, index) => (
+                state.generatedRecipe.ingredients.map((item: string, index: number) => (
                   <li key={index}>{item}</li>
                 ))
               ) : (
@@ -172,8 +191,16 @@ export default function Instruction() {
             </ul>
             <div className="mt-5">
               <p className="ins-info">
-                <strong>Allergies:</strong>{" "}
-                {capitalizeFirst(state.allergies) || "None"}
+                <p>Excludes</p>
+                <ul>
+                  {state.allergies ? (
+                    state.allergies.split(',').map((item: string, index: number) => (
+                      <li key={index}>{item.trim()}</li>
+                    ))
+                  ) : (
+                    <li>No exclusions specified</li>
+                  )}
+                </ul>
               </p>
               <p className="ins-info">
                 <strong>Cuisine:</strong>{" "}
@@ -189,7 +216,7 @@ export default function Instruction() {
             <p>Instructions</p>
             <ul>
               {state.generatedRecipe?.instructions?.length ? (
-                state.generatedRecipe.instructions.map((step, index) => (
+                state.generatedRecipe.instructions.map((step: string, index: number) => (
                   <li key={index}>{step}</li>
                 ))
               ) : (
@@ -212,18 +239,27 @@ export default function Instruction() {
         </button>
 
         <button
-    onClick={handleRefresh}
-    style={{
-      marginTop: "1rem",
-      padding: "10px 20px",
-      borderRadius: "8px",
-      backgroundColor: "#f0f0f0",
-      border: "none",
-      cursor: "pointer"
-    }}
-  >
-    🔄 Refresh Recipe
-  </button>
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          style={{
+            marginTop: "1rem",
+            padding: "10px 20px",
+            borderRadius: "8px",
+            backgroundColor: "#f0f0f0",
+            border: "none",
+            cursor: isRefreshing ? "not-allowed" : "pointer",
+            opacity: isRefreshing ? 0.7 : 1
+          }}
+        >
+          {isRefreshing ? (
+            <>
+              <span className="refresh-spinner">🔄</span>
+              Refreshing...
+            </>
+          ) : (
+            "🔄 Refresh Recipe"
+          )}
+        </button>
 
           {saveSuccess && (
             <div className="save-success-message">

@@ -1,71 +1,69 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../../firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../../firebase/config";
 import { useRecipe } from "../store/RecipeContext";
-
-const Header: React.FC = () => {
+const Header = () => {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
-  const [username, setUsername] = useState("");
   const { dispatch } = useRecipe();
+  const [user, setUser] = React.useState<{ displayName: string; email: string | null } | null>(null);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+  React.useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        setCurrentUser(user);
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setUsername(docSnap.data().username || user.email);
-        }
+        // Get the username from email if displayName is not available
+        const username = user.displayName || user.email?.split('@')[0] || 'User';
+        setUser({
+          displayName: username,
+          email: user.email
+        });
       } else {
-        setCurrentUser(null);
-        setUsername("");
+        setUser(null);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  const handleAuth = () => {
-    navigate("/AlgoEAThm/login");
-  };
-
-
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
     if (confirmLogout) {
-      dispatch({ type: "RESET" });
-      await signOut(auth);
-      setCurrentUser(null);
-      setUsername("");
-      navigate("/AlgoEAThm");
+      try {
+        // Clear all recipe-related state
+        dispatch({ type: "SET_GENERATED_RECIPE", payload: null });
+        dispatch({ type: "SET_INGREDIENTS", payload: "" });
+        dispatch({ type: "SET_ALLERGIES", payload: "" });
+        dispatch({ type: "SET_CUISINE", payload: "" });
+        dispatch({ type: "SET_TIME_LIMIT", payload: "" });
+        
+        await auth.signOut();
+        navigate("/AlgoEAThm");
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
     }
   };
 
   return (
-    <header className="algoEAThm-topbar">
+    <div className="algoEAThm-topbar">
       <div className="algoEAThm-leftSection">
-        <img src="/5500.png" alt="AlgoEAThm Logo" className="algoEAThm-logo" />
-        <h2 className="algoEAThm-title">AlgoEAThm</h2>
+        <img src="/5500.png" alt="Logo" className="algoEAThm-logo" />
+        <h1 className="algoEAThm-title">AlgoEAThm</h1>
       </div>
       <div className="algoEAThm-rightSection">
-        {currentUser ? (
+        {user ? (
           <>
-            <span className="welcome-text">Welcome, {username}!</span>
+            <span className="welcome-text">Welcome, {user.displayName}!</span>
             <button className="algoEAThm-AuthBtn" onClick={handleLogout}>
               Logout
             </button>
           </>
         ) : (
-          <button onClick={handleAuth} className="algoEAThm-AuthBtn">
+          <button onClick={() => navigate("/AlgoEAThm/login")} className="algoEAThm-AuthBtn">
             Login/Register
           </button>
         )}
       </div>
-    </header>
+    </div>
   );
 };
 

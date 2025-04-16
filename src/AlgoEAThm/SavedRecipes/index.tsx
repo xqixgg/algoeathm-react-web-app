@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import {
   collection,
@@ -8,9 +8,10 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
-import { db, auth } from "../../firebase";
+import { db } from "../../firebase/config";
 import Header from "../Header";
 import "./index.css";
+import { useAuth } from "../store/AuthContext";
 
 // Define the recipe interface to match the JSON structure
 interface SavedRecipe {
@@ -33,20 +34,18 @@ export default function SavedRecipes() {
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedRecipe, setSelectedRecipe] = useState<SavedRecipe | null>(
-    null
-  );
+  const [selectedRecipe, setSelectedRecipe] = useState<SavedRecipe | null>(null);
+  const { currentUser } = useAuth();
+  const recipesFetched = useRef(false);
 
   useEffect(() => {
     const fetchSavedRecipes = async () => {
-      try {
-        const currentUser = auth.currentUser;
-        if (!currentUser) {
-          setError("You must be logged in to view saved recipes");
-          setLoading(false);
-          return;
-        }
+      // Only fetch if we haven't fetched before and we have a user
+      if (recipesFetched.current || !currentUser) {
+        return;
+      }
 
+      try {
         // Query recipes where userId matches current user's ID
         const userRecipesRef = collection(db, "userRecipes");
         const q = query(userRecipesRef, where("userId", "==", currentUser.uid));
@@ -82,6 +81,7 @@ export default function SavedRecipes() {
 
         setSavedRecipes(recipes);
         setLoading(false);
+        recipesFetched.current = true;
 
         // Auto-select the first recipe if available
         if (recipes.length > 0) {
@@ -95,7 +95,7 @@ export default function SavedRecipes() {
     };
 
     fetchSavedRecipes();
-  }, []);
+  }, [currentUser]);
 
   const handleDeleteRecipe = async (recipeId: string) => {
     try {
@@ -225,8 +225,16 @@ export default function SavedRecipes() {
 
                     <div className="recipe-meta-details">
                       <p>
-                        <strong>Allergies:</strong>{" "}
-                        {capitalizeFirst(selectedRecipe.allergies) || "None"}
+                        <strong>Excludes:</strong>
+                        <ul>
+                          {selectedRecipe.allergies && selectedRecipe.allergies.length > 0 ? (
+                            selectedRecipe.allergies.split(',').map((item, index) => (
+                              <li key={index}>{item.trim()}</li>
+                            ))
+                          ) : (
+                            <li>Not specified</li>
+                          )}
+                        </ul>
                       </p>
                       <p>
                         <strong>Cuisine:</strong>{" "}

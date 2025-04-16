@@ -46,7 +46,7 @@
   box-sizing: border-box;
   flex: 1;
   padding: 20px 20px;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
   border-radius: 4px;
 }
 
@@ -55,7 +55,7 @@
   flex: 1;
   border-radius: 4px;
   padding: 20px 20px;
-  background-color: #afb29c;
+  background-color: #f9f9f9;
 }
 
 .save-success-message {
@@ -87,4 +87,19 @@
 .algoEAThm-generateBtn.disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.refresh-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
 }

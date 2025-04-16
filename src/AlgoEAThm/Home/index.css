@@ -158,3 +158,33 @@ html, body {
     font-size: 18px;
     margin-right: 15px;
 }
+
+/* Media query for screens narrower than 480px */
+@media (max-width: 480px) {
+    .algoEAThm-logo {
+        display: none;
+    }
+
+    .algoEAThm-topbar {
+        justify-content: flex-end;
+    }
+} 
+
+/* Media query for screens narrower than 768px */
+@media (max-width: 768px) {
+    .algoEAThm-logo span {
+      display: none;
+    }
+
+    .algoEAThm-title {
+        display: none;
+    }
+    
+    .algoEAThm-logo img {
+      height: 30px;
+    }
+    
+    .algoEAThm-topbar {
+      padding: 0.75rem 1rem;
+    }
+}
