@@ -42,6 +42,8 @@ export default function SavedRecipes() {
     const fetchSavedRecipes = async () => {
       // Only fetch if we haven't fetched before and we have a user
       if (recipesFetched.current || !currentUser) {
+        setLoading(false);
+        setSavedRecipes([]);
         return;
       }
 
@@ -162,7 +164,14 @@ export default function SavedRecipes() {
 
         <h2 className="saved-recipes-title">My Saved Recipes</h2>
 
-        {loading ? (
+        {!currentUser ? (
+          <div className="no-recipes-container">
+            <p>Please log in to view your saved recipes.</p>
+            <NavLink to="/AlgoEAThm/login" className="algoEAThm-generateBtn">
+              Log In
+            </NavLink>
+          </div>
+        ) : loading ? (
           <div className="loading-container">Loading saved recipes...</div>
         ) : error ? (
           <div className="error-container">{error}</div>
