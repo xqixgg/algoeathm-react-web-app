@@ -5,7 +5,6 @@ import { getFirestore } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
   User,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -16,7 +15,6 @@ export default function AuthForm() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const auth = getAuth();
@@ -40,7 +38,6 @@ export default function AuthForm() {
     try {
       if (isLogin) {
         const res = await signInWithEmailAndPassword(auth, email, password);
-        setUser(res.user);
         navigate("/Instruction");
       } else {
         const res = await createUserWithEmailAndPassword(auth, email, password);
@@ -50,7 +47,6 @@ export default function AuthForm() {
           savedRecipes: [],
           createdAt: serverTimestamp(),
         });
-        setUser(res.user);
       }
       navigate("/AlgoEAThm", { replace: true });
     } catch (err) {
@@ -60,11 +56,6 @@ export default function AuthForm() {
         setError("An error occurred");
       }
     }
-  };
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    setUser(null);
   };
 
   const handleContinueWithoutLogin = () => {

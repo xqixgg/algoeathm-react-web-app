@@ -42,10 +42,6 @@ export default function Instruction() {
     checkIfRecipeIsSaved();
   }, [state.generatedRecipe]);
 
-  const handleAuth = () => {
-    navigate("/AlgoEAThm/login");
-  };
-
   const capitalizeFirst = (text: string) => {
     if (!text) return text;
     return text.charAt(0).toUpperCase() + text.slice(1);

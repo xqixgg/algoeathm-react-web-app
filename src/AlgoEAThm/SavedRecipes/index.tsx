@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import {
   collection,
@@ -34,7 +34,9 @@ export default function SavedRecipes() {
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedRecipe, setSelectedRecipe] = useState<SavedRecipe | null>(null);
+  const [selectedRecipe, setSelectedRecipe] = useState<SavedRecipe | null>(
+    null
+  );
   const { currentUser } = useAuth();
   const recipesFetched = useRef(false);
 
@@ -236,10 +238,13 @@ export default function SavedRecipes() {
                       <p>
                         <strong>Excludes:</strong>
                         <ul>
-                          {selectedRecipe.allergies && selectedRecipe.allergies.length > 0 ? (
-                            selectedRecipe.allergies.split(',').map((item, index) => (
-                              <li key={index}>{item.trim()}</li>
-                            ))
+                          {selectedRecipe.allergies &&
+                          selectedRecipe.allergies.length > 0 ? (
+                            selectedRecipe.allergies
+                              .split(",")
+                              .map((item, index) => (
+                                <li key={index}>{item.trim()}</li>
+                              ))
                           ) : (
                             <li>Not specified</li>
                           )}
