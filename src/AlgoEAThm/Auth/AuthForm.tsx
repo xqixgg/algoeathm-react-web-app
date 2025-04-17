@@ -5,7 +5,6 @@ import { getFirestore } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  User,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
@@ -37,7 +36,7 @@ export default function AuthForm() {
     }
     try {
       if (isLogin) {
-        const res = await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
         navigate("/Instruction");
       } else {
         const res = await createUserWithEmailAndPassword(auth, email, password);

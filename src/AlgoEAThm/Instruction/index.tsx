@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./index.css";
 import { useRecipe } from "../store/RecipeContext";
 import { useState } from "react";
@@ -12,7 +12,6 @@ import axios from "axios";
 
 export default function Instruction() {
   const { state, dispatch } = useRecipe();
-  const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
