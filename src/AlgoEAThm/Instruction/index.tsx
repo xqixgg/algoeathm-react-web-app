@@ -1,10 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./index.css";
-import { useRecipe } from "../store/RecipeContext"; 
-import React, { useState } from "react";
+import { useRecipe } from "../store/RecipeContext";
+import { useState } from "react";
 import Header from "../Header";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "../../firebase/config";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 import { useEffect } from "react";
 import { getDocs, query, where } from "firebase/firestore";
 import axios from "axios";
@@ -17,6 +18,8 @@ export default function Instruction() {
   const [saveError, setSaveError] = useState("");
   const [isAlreadySaved, setIsAlreadySaved] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const auth = getAuth();
+  const db = getFirestore();
 
   useEffect(() => {
     const checkIfRecipeIsSaved = async () => {
@@ -25,17 +28,17 @@ export default function Instruction() {
         setIsAlreadySaved(false);
         return;
       }
-  
+
       const userRecipesRef = collection(db, "userRecipes");
       const q = query(
         userRecipesRef,
         where("userId", "==", currentUser.uid),
-        where("name", "==", state.generatedRecipe.name) 
+        where("name", "==", state.generatedRecipe.name)
       );
       const querySnapshot = await getDocs(q);
       setIsAlreadySaved(!querySnapshot.empty);
     };
-  
+
     checkIfRecipeIsSaved();
   }, [state.generatedRecipe]);
 
@@ -75,7 +78,7 @@ export default function Instruction() {
         where("name", "==", state.generatedRecipe.name)
       );
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         setSaveError("This recipe is already saved");
         setIsSaving(false);
@@ -109,20 +112,23 @@ export default function Instruction() {
   };
 
   const handleRefresh = async () => {
-    const ingredients = state.ingredients?.split(",").map(i => i.trim());
+    const ingredients = state.ingredients?.split(",").map((i) => i.trim());
     if (!ingredients || ingredients.length === 0) {
       alert("No ingredients to refresh with.");
       return;
     }
-  
+
     try {
       setIsRefreshing(true);
       setIsAlreadySaved(false); // Reset saved state when refreshing
-      const res = await axios.post("http://localhost:3000/recipe", {
-        ingredients,
-        timestamp: Date.now()
-      });
-  
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/recipe`,
+        {
+          ingredients,
+          timestamp: Date.now(),
+        }
+      );
+
       dispatch({ type: "SET_GENERATED_RECIPE", payload: res.data.recipe });
     } catch (err) {
       alert("Failed to refresh recipe.");
@@ -131,7 +137,6 @@ export default function Instruction() {
       setIsRefreshing(false);
     }
   };
-  
 
   return (
     <div className="algoEAThm-container">
@@ -182,9 +187,9 @@ export default function Instruction() {
             <p>Ingredients list</p>
             <ul>
               {state.generatedRecipe?.ingredients?.length ? (
-                state.generatedRecipe.ingredients.map((item: string, index: number) => (
-                  <li key={index}>{item}</li>
-                ))
+                state.generatedRecipe.ingredients.map(
+                  (item: string, index: number) => <li key={index}>{item}</li>
+                )
               ) : (
                 <li>No ingredients provided</li>
               )}
@@ -194,9 +199,11 @@ export default function Instruction() {
                 <p>Excludes</p>
                 <ul>
                   {state.allergies ? (
-                    state.allergies.split(',').map((item: string, index: number) => (
-                      <li key={index}>{item.trim()}</li>
-                    ))
+                    state.allergies
+                      .split(",")
+                      .map((item: string, index: number) => (
+                        <li key={index}>{item.trim()}</li>
+                      ))
                   ) : (
                     <li>No exclusions specified</li>
                   )}
@@ -216,9 +223,9 @@ export default function Instruction() {
             <p>Instructions</p>
             <ul>
               {state.generatedRecipe?.instructions?.length ? (
-                state.generatedRecipe.instructions.map((step: string, index: number) => (
-                  <li key={index}>{step}</li>
-                ))
+                state.generatedRecipe.instructions.map(
+                  (step: string, index: number) => <li key={index}>{step}</li>
+                )
               ) : (
                 <li>No instructions available</li>
               )}
@@ -226,40 +233,42 @@ export default function Instruction() {
           </div>
         </div>
         <div className="ins-row align-items-center justify-content-center">
-        <button
-          onClick={handleSave}
-          className={`algoEAThm-generateBtn ${isSaving || isAlreadySaved ? "disabled" : ""}`}
-          disabled={isSaving || isAlreadySaved}
-        >
-          {isSaving
-            ? "Saving..."
-            : isAlreadySaved
-            ? "Saved to Recipes"
-            : "Save to My Recipes"}
-        </button>
+          <button
+            onClick={handleSave}
+            className={`algoEAThm-generateBtn ${
+              isSaving || isAlreadySaved ? "disabled" : ""
+            }`}
+            disabled={isSaving || isAlreadySaved}
+          >
+            {isSaving
+              ? "Saving..."
+              : isAlreadySaved
+              ? "Saved to Recipes"
+              : "Save to My Recipes"}
+          </button>
 
-        <button
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          style={{
-            marginTop: "1rem",
-            padding: "10px 20px",
-            borderRadius: "8px",
-            backgroundColor: "#f0f0f0",
-            border: "none",
-            cursor: isRefreshing ? "not-allowed" : "pointer",
-            opacity: isRefreshing ? 0.7 : 1
-          }}
-        >
-          {isRefreshing ? (
-            <>
-              <span className="refresh-spinner">🔄</span>
-              Refreshing...
-            </>
-          ) : (
-            "🔄 Refresh Recipe"
-          )}
-        </button>
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            style={{
+              marginTop: "1rem",
+              padding: "10px 20px",
+              borderRadius: "8px",
+              backgroundColor: "#f0f0f0",
+              border: "none",
+              cursor: isRefreshing ? "not-allowed" : "pointer",
+              opacity: isRefreshing ? 0.7 : 1,
+            }}
+          >
+            {isRefreshing ? (
+              <>
+                <span className="refresh-spinner">🔄</span>
+                Refreshing...
+              </>
+            ) : (
+              "🔄 Refresh Recipe"
+            )}
+          </button>
 
           {saveSuccess && (
             <div className="save-success-message">
