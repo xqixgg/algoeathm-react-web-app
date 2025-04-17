@@ -8,7 +8,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? process.env.FRONTEND_URL || "http://localhost:5173" // Will be updated after deployment
+        : "http://localhost:5173",
     methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Access-Control-Allow-Origin"],
@@ -27,10 +30,22 @@ app.post("/recipe", async (req, res) => {
   res.header("Access-Control-Allow-Credentials", "true");
 
   try {
-    const { ingredients = [], cuisine = "", excludes = "", timeLimit = "", timestamp } = req.body;
+    const {
+      ingredients = [],
+      cuisine = "",
+      excludes = "",
+      timeLimit = "",
+      timestamp,
+    } = req.body;
 
-    console.log("Received request:", { ingredients, cuisine, excludes, timeLimit, timestamp });
-    
+    console.log("Received request:", {
+      ingredients,
+      cuisine,
+      excludes,
+      timeLimit,
+      timestamp,
+    });
+
     // Basic server-side validation for ingredients
     if (!ingredients || ingredients.length === 0) {
       return res
@@ -39,7 +54,9 @@ app.post("/recipe", async (req, res) => {
     }
 
     // Validate that ingredients are not empty strings
-    const validIngredients = ingredients.filter(ing => ing && ing.trim().length > 0);
+    const validIngredients = ingredients.filter(
+      (ing) => ing && ing.trim().length > 0
+    );
     if (validIngredients.length === 0) {
       return res
         .status(400)
@@ -47,13 +64,15 @@ app.post("/recipe", async (req, res) => {
     }
 
     // Check for specific invalid ingredients
-    const invalidIngredients = validIngredients.filter(ing => 
+    const invalidIngredients = validIngredients.filter((ing) =>
       ["abcdef", "asdasd"].includes(ing.toLowerCase().trim())
     );
     if (invalidIngredients.length > 0) {
-      return res
-        .status(400)
-        .json({ error: `Invalid ingredients: "${invalidIngredients.join(", ")}" are not valid food items.` });
+      return res.status(400).json({
+        error: `Invalid ingredients: "${invalidIngredients.join(
+          ", "
+        )}" are not valid food items.`,
+      });
     }
 
     // Limit number of ingredients to 10
@@ -65,53 +84,85 @@ app.post("/recipe", async (req, res) => {
 
     // Add server-side validation for cuisine
     const validCuisines = [
-      "italian", "chinese", "japanese", "indian", "mexican", "french", "thai", 
-      "spanish", "greek", "american", "korean", "vietnamese", "mediterranean", 
-      "middle eastern", "caribbean", "brazilian", "german", "british", "african"
+      "italian",
+      "chinese",
+      "japanese",
+      "indian",
+      "mexican",
+      "french",
+      "thai",
+      "spanish",
+      "greek",
+      "american",
+      "korean",
+      "vietnamese",
+      "mediterranean",
+      "middle eastern",
+      "caribbean",
+      "brazilian",
+      "german",
+      "british",
+      "african",
     ];
-    
+
     if (cuisine && !validCuisines.includes(cuisine.toLowerCase())) {
-      return res.status(400).json({ 
-        error: "Invalid cuisine: Please provide a valid cuisine type from the following: " + 
-        validCuisines.join(", ") 
+      return res.status(400).json({
+        error:
+          "Invalid cuisine: Please provide a valid cuisine type from the following: " +
+          validCuisines.join(", "),
       });
     }
 
     // Validate time limit is a number between 5 and 1440 (24 hours in minutes)
     if (timeLimit) {
       const timeLimitNum = Number(timeLimit);
-      if (isNaN(timeLimitNum) || !Number.isInteger(timeLimitNum) || timeLimitNum < 5 || timeLimitNum > 1440) {
-        return res.status(400).json({ 
-          error: "Invalid time limit: Please provide a whole number between 5 and 1440 minutes." 
+      if (
+        isNaN(timeLimitNum) ||
+        !Number.isInteger(timeLimitNum) ||
+        timeLimitNum < 5 ||
+        timeLimitNum > 1440
+      ) {
+        return res.status(400).json({
+          error:
+            "Invalid time limit: Please provide a whole number between 5 and 1440 minutes.",
         });
       }
     }
 
     // Parse excludes into an array and filter out empty strings
-    const excludeItems = excludes ? (Array.isArray(excludes) ? excludes : excludes.split(',').map(item => item.trim())).filter(item => item) : [];
+    const excludeItems = excludes
+      ? (Array.isArray(excludes)
+          ? excludes
+          : excludes.split(",").map((item) => item.trim())
+        ).filter((item) => item)
+      : [];
     console.log("Parsed exclude items:", excludeItems);
 
     // Check for specific invalid excludes
-    const invalidExcludes = excludeItems.filter(item => 
+    const invalidExcludes = excludeItems.filter((item) =>
       ["abcdef", "asdasd"].includes(item.toLowerCase().trim())
     );
     if (invalidExcludes.length > 0) {
-      return res.status(400).json({ 
-        error: `Invalid excludes: "${invalidExcludes.join(", ")}" are not valid food items, allergens, or dietary restrictions.` 
+      return res.status(400).json({
+        error: `Invalid excludes: "${invalidExcludes.join(
+          ", "
+        )}" are not valid food items, allergens, or dietary restrictions.`,
       });
     }
 
     // Check if any ingredient is in excludes
-    const commonItems = validIngredients.filter(ing => 
-      excludeItems.some(exclude => 
-        ing.toLowerCase().trim() === exclude.toLowerCase().trim()
+    const commonItems = validIngredients.filter((ing) =>
+      excludeItems.some(
+        (exclude) => ing.toLowerCase().trim() === exclude.toLowerCase().trim()
       )
     );
-    
+
     if (commonItems.length > 0) {
-      return res
-        .status(400)
-        .json({ error: `The following items cannot be both ingredients and excludes: ${commonItems.join(", ")}` });
+      return res.status(400).json({
+        error: `The following items cannot be both ingredients and excludes: ${commonItems.join(
+          ", "
+        )}`,
+      });
     }
 
     if (!GOOGLE_AI_API_KEY) {
@@ -120,8 +171,10 @@ app.post("/recipe", async (req, res) => {
     }
 
     // Use timestamp to create a unique seed for randomization
-    const randomSeed = timestamp ? parseInt(timestamp.toString().slice(-4)) : Math.floor(Math.random() * 10000);
-    
+    const randomSeed = timestamp
+      ? parseInt(timestamp.toString().slice(-4))
+      : Math.floor(Math.random() * 10000);
+
     let promptText = `Generate a completely different recipe with a unique name and the following format:
     - Dish Name: (must be unique and different from previous recipes)
     - Short Description:
@@ -148,7 +201,9 @@ app.post("/recipe", async (req, res) => {
        - If fewer than 1 meaningful ingredient, respond ONLY with "Invalid ingredients: Please provide at least 1 meaningful ingredient."
        - Common food items like fruits, vegetables, meats, dairy, grains, etc. are valid ingredients.
        - Single ingredients like "tomatoes", "chicken", "rice" are valid ingredients.
-       - The ingredients provided are: ${validIngredients.join(", ")}. These are valid ingredients.
+       - The ingredients provided are: ${validIngredients.join(
+         ", "
+       )}. These are valid ingredients.
 
     2. For excludes list (if provided):
        - Check each exclude item individually: ${excludeItems.join(", ")}
@@ -160,7 +215,9 @@ app.post("/recipe", async (req, res) => {
        - Empty exclude items should be ignored.
 
     3. For cuisine type (if provided):
-       - If not one of: ${validCuisines.join(", ")}, respond ONLY with "Invalid cuisine: Please provide a valid cuisine type from the list."
+       - If not one of: ${validCuisines.join(
+         ", "
+       )}, respond ONLY with "Invalid cuisine: Please provide a valid cuisine type from the list."
 
     4. For time limit (if provided):
        - If not between 5 minutes and 24 hours, respond ONLY with "Invalid time limit: Please provide a reasonable cooking time between 5 minutes and 24 hours."
@@ -171,7 +228,9 @@ app.post("/recipe", async (req, res) => {
       promptText += ` Cuisine preference: ${cuisine}.`;
     }
     if (excludeItems.length > 0) {
-      promptText += ` Exclude these items/preferences: ${excludeItems.join(", ")}.`;
+      promptText += ` Exclude these items/preferences: ${excludeItems.join(
+        ", "
+      )}.`;
     }
     if (timeLimit) {
       promptText += ` Make sure it can be prepared within ${timeLimit} minutes.`;
@@ -179,10 +238,10 @@ app.post("/recipe", async (req, res) => {
 
     // Add randomization based on timestamp
     promptText += ` If ALL inputs are valid: Be creative and generate a completely different recipe than before. Use different cooking techniques, flavor combinations, and presentation styles. The dish name must be unique and different from any previous recipes. Use the random seed ${randomSeed} to ensure uniqueness.`;
-    
+
     // Enforce step-by-step instructions format without numbering
     promptText += ` IMPORTANT: You MUST provide clear step-by-step instructions. Each step should be on a new line without any numbering or bullet points. Each step should be a complete sentence that can be followed independently. Do not combine multiple steps into one. The instructions must be detailed enough for someone to follow them without prior knowledge.`;
-    
+
     console.log("Making request to Google AI API with prompt:", promptText);
 
     const response = await axios.post(
@@ -210,44 +269,73 @@ app.post("/recipe", async (req, res) => {
       console.log("Raw Recipe Text:", recipeText);
 
       // Check for error messages in the response
-      if (recipeText.includes("Invalid ingredients:") || 
-          recipeText.includes("Invalid cuisine:") || 
-          recipeText.includes("Invalid time limit:") ||
-          recipeText.includes("Invalid excludes:")) {
+      if (
+        recipeText.includes("Invalid ingredients:") ||
+        recipeText.includes("Invalid cuisine:") ||
+        recipeText.includes("Invalid time limit:") ||
+        recipeText.includes("Invalid excludes:")
+      ) {
         // Extract the full error message
-        const errorMatch = recipeText.match(/Invalid (?:ingredients|cuisine|time limit|excludes):[^.]*/);
+        const errorMatch = recipeText.match(
+          /Invalid (?:ingredients|cuisine|time limit|excludes):[^.]*/
+        );
         const errorMessage = errorMatch ? errorMatch[0] : recipeText;
         console.log("Validation error detected:", errorMessage);
         return res.status(400).json({ error: errorMessage });
       }
 
       // If the response doesn't contain any recipe sections, it's likely an error
-      if (!recipeText.includes("Dish Name:") || 
-          !recipeText.includes("Short Description:") || 
-          !recipeText.includes("Ingredients:") || 
-          !recipeText.includes("Instructions:")) {
-        console.log("Response missing recipe sections, likely an error message:", recipeText);
-        return res.status(400).json({ error: "Invalid response from AI. Please try again." });
+      if (
+        !recipeText.includes("Dish Name:") ||
+        !recipeText.includes("Short Description:") ||
+        !recipeText.includes("Ingredients:") ||
+        !recipeText.includes("Instructions:")
+      ) {
+        console.log(
+          "Response missing recipe sections, likely an error message:",
+          recipeText
+        );
+        return res
+          .status(400)
+          .json({ error: "Invalid response from AI. Please try again." });
       }
 
-      const lines = recipeText.split("\n").map(line => line.trim()).filter(line => line);
-      
-      let recipe = { name: "", description: "", ingredients: [], instructions: [] };
+      const lines = recipeText
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line);
+
+      let recipe = {
+        name: "",
+        description: "",
+        ingredients: [],
+        instructions: [],
+      };
       let section = "";
 
       // If we get an empty recipe after parsing, it means the AI returned an error message
       // that wasn't caught by the previous check
       if (lines.length === 0) {
         console.log("Empty recipe detected, likely an error message");
-        return res.status(400).json({ error: "Invalid input: Please check your ingredients and excludes." });
+        return res.status(400).json({
+          error: "Invalid input: Please check your ingredients and excludes.",
+        });
       }
 
-      lines.forEach(line => {
+      lines.forEach((line) => {
         if (line.includes("Dish Name:")) {
-          recipe.name = line.replace("Dish Name:", "").replace("- Dish Name:", "").replace(/^-/, "").trim();
+          recipe.name = line
+            .replace("Dish Name:", "")
+            .replace("- Dish Name:", "")
+            .replace(/^-/, "")
+            .trim();
           section = "description";
         } else if (line.includes("Short Description:")) {
-          recipe.description = line.replace("Short Description:", "").replace("- Short Description:", "").replace(/^-/, "").trim();
+          recipe.description = line
+            .replace("Short Description:", "")
+            .replace("- Short Description:", "")
+            .replace(/^-/, "")
+            .trim();
           section = "ingredients";
         } else if (line.includes("Ingredients:")) {
           section = "ingredients";
@@ -255,24 +343,42 @@ app.post("/recipe", async (req, res) => {
           section = "instructions";
         } else if (section === "ingredients") {
           // Only add non-empty lines that aren't section headers
-          if (line && !line.includes("Dish Name:") && !line.includes("Short Description:") && 
-              !line.includes("Ingredients:") && !line.includes("Step-by-step Instructions:")) {
+          if (
+            line &&
+            !line.includes("Dish Name:") &&
+            !line.includes("Short Description:") &&
+            !line.includes("Ingredients:") &&
+            !line.includes("Step-by-step Instructions:")
+          ) {
             recipe.ingredients.push(line.replace(/^-/, "").trim());
           }
         } else if (section === "instructions") {
           // Add any non-empty line that isn't a section header
-          if (line && !line.includes("Dish Name:") && !line.includes("Short Description:") && 
-              !line.includes("Ingredients:") && !line.includes("Step-by-step Instructions:")) {
+          if (
+            line &&
+            !line.includes("Dish Name:") &&
+            !line.includes("Short Description:") &&
+            !line.includes("Ingredients:") &&
+            !line.includes("Step-by-step Instructions:")
+          ) {
             recipe.instructions.push(line.replace(/^-/, "").trim());
           }
         }
       });
 
       // Validate that we have all required sections
-      if (!recipe.name || !recipe.description || recipe.ingredients.length === 0 || recipe.instructions.length === 0) {
+      if (
+        !recipe.name ||
+        !recipe.description ||
+        recipe.ingredients.length === 0 ||
+        recipe.instructions.length === 0
+      ) {
         console.error("Missing required recipe sections:", recipe);
         console.error("Original response text:", recipeText);
-        return res.status(400).json({ error: "AI response missing required recipe sections. Please try again." });
+        return res.status(400).json({
+          error:
+            "AI response missing required recipe sections. Please try again.",
+        });
       }
 
       console.log("Parsed Recipe:", recipe);

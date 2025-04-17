@@ -6,8 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-/src/.env
-/backend/.env
+
 node_modules
 dist
 dist-ssr
@@ -23,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: algoeathm-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: GOOGLE_AI_API_KEY
+        sync: false
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        sync: false # Will be updated after frontend deployment
