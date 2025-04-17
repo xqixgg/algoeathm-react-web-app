@@ -5,7 +5,6 @@ import axios from "axios";
 import { useState } from "react";
 import Header from "../Header";
 
-
 const Home: React.FC = () => {
   const { state, dispatch } = useRecipe(); // Use the global store
   const navigate = useNavigate();
@@ -27,20 +26,20 @@ const Home: React.FC = () => {
     setError(null);
 
     try {
-      const ingredients = state.ingredients.split(',').map(i => i.trim());
+      const ingredients = state.ingredients.split(",").map((i) => i.trim());
       const cuisine = state.cuisine?.trim() || "";
-      const excludes = state.allergies?.split(',').map(i => i.trim()) || [];
+      const excludes = state.allergies?.split(",").map((i) => i.trim()) || [];
       const timeLimit = state.timeLimit?.trim() || "";
-      
+
       console.log("Sending API request with:", {
         ingredients,
         cuisine,
         excludes,
-        timeLimit
+        timeLimit,
       });
-      
+
       const response = await axios.post(
-        "http://localhost:3000/recipe",
+        `${import.meta.env.VITE_BACKEND_URL}/recipe`,
         { ingredients, cuisine, excludes, timeLimit },
         {
           headers: { "Content-Type": "application/json" },
@@ -48,8 +47,7 @@ const Home: React.FC = () => {
         }
       );
 
-
-      console.log('API Response:', response.data);
+      console.log("API Response:", response.data);
 
       if (response.data.recipe) {
         const {
@@ -62,16 +60,18 @@ const Home: React.FC = () => {
         const parsedRecipe = {
           name: name?.trim() || "Unnamed Dish",
           description: description?.trim() || "No description provided.",
-          ingredients: Array.isArray(apiIngredients) && apiIngredients.length > 0
-            ? apiIngredients.map(ing => ing.trim())
-            : ["No ingredients provided."],
-          instructions: Array.isArray(apiInstructions) && apiInstructions.length > 0
-            ? apiInstructions.map(step => step.trim())
-            : ["No instructions provided."],
+          ingredients:
+            Array.isArray(apiIngredients) && apiIngredients.length > 0
+              ? apiIngredients.map((ing) => ing.trim())
+              : ["No ingredients provided."],
+          instructions:
+            Array.isArray(apiInstructions) && apiInstructions.length > 0
+              ? apiInstructions.map((step) => step.trim())
+              : ["No instructions provided."],
         };
 
-        console.log('Parsed Recipe:', parsedRecipe);
-        dispatch({ type: 'SET_GENERATED_RECIPE', payload: parsedRecipe });
+        console.log("Parsed Recipe:", parsedRecipe);
+        dispatch({ type: "SET_GENERATED_RECIPE", payload: parsedRecipe });
         navigate("/AlgoEAThm/Instruction");
       } else {
         setError("No recipe was generated. Please try again.");
@@ -185,8 +185,6 @@ const Home: React.FC = () => {
         >
           {isLoading ? "Generating..." : "Generate"}
         </button>
-
-        
       </main>
     </div>
   );

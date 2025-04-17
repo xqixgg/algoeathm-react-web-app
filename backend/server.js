@@ -26,7 +26,12 @@ const MODEL_NAME = "gemini-1.5-flash"; // ✅ Correct model name
 const GOOGLE_AI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GOOGLE_AI_API_KEY}`;
 
 app.post("/recipe", async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header(
+    "Access-Control-Allow-Origin",
+    process.env.NODE_ENV === "production"
+      ? process.env.FRONTEND_URL || "http://localhost:5173"
+      : "http://localhost:5173"
+  );
   res.header("Access-Control-Allow-Credentials", "true");
 
   try {
