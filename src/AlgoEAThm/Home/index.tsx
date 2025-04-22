@@ -123,7 +123,7 @@ const Home: React.FC = () => {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Saved Recipes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            Saved Recipes
           </NavLink>
         </nav>
         <div className="mt-3">
