@@ -18,7 +18,7 @@ html, body {
 .algoEAThm-topbar {
     position: relative;       /* Needed for absolute positioning of children */
     width: 100%;
-    background-color: green;
+    background-color: #f0f0f0;
     padding: 10px 20px;       /* Padding around top bar content */
     box-sizing: border-box;
     height: 75px;            /* Adjust if you want a fixed height */
@@ -128,7 +128,7 @@ html, body {
     margin-top: 20px;
     padding: 10px 20px;
     cursor: pointer;
-    background-color: green; /* Vibrant Orange */
+    background-color: #ff5601; /* Vibrant Orange */
     font-style: inherit;
     border: none;
     color: #fff;
