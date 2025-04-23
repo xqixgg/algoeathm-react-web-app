@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 100px auto;
+  margin: 5px auto;
   width: 100%;
   max-width: 1200px;
   padding: 20px;
@@ -102,4 +102,12 @@
   display: inline-block;
   animation: spin 1s linear infinite;
   margin-right: 8px;
+}
+
+.banner-video {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border-radius: 8px;
 }

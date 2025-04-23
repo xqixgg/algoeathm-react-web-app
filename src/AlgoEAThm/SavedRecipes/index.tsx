@@ -136,6 +136,17 @@ export default function SavedRecipes() {
       <Header />
 
       <div className="saved-recipes-container">
+        <video 
+          className="banner-video"
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+        >
+          <source src="/banner.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
         <nav className="algoEAThm-tabs">
           <NavLink
             to="/AlgoEAThm"

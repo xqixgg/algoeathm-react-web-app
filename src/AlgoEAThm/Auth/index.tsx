@@ -8,18 +8,31 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-page">
-      <div className="login-content">
-        <div className="form-section">
-        <h1
-            style={{ cursor: "pointer"}}
-            onClick={() => navigate("/AlgoEAThm")}
+      <div className="video-section">
+        <video 
+          className="login-video"
+          autoPlay 
+          loop 
+          muted 
+          playsInline
         >
-        AlgoEAThm
-      </h1>
-          <AuthForm />
-        </div>
+          <source src="/login.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div className="login-overlay"></div>
+      <div className="login-content">
         <div className="logo-section">
           <img src="5500.png" alt="AlgoEAThm Logo" className="algoEAThm-x-logo" />
+        </div>
+        <div className="form-section">
+          <h1
+            style={{ cursor: "pointer"}}
+            onClick={() => navigate("/AlgoEAThm")}
+          >
+            AlgoEAThm
+          </h1>
+          <AuthForm />
         </div>
       </div>
     </div>

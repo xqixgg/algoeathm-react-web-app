@@ -5,6 +5,36 @@
     padding: 3rem 2rem;
     display: flex;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-video {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2;
 }
 
 .login-content {
@@ -13,6 +43,13 @@
     align-items: flex-start;
     justify-content: center;
     flex-wrap: wrap;
+    max-width: 1200px;
+    position: relative;
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .form-section {
@@ -20,6 +57,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    order: 1;
 }
 
 .title {
@@ -32,6 +70,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: -50px;
+    order: 2;
 }
 
 .algoEAThm-x-logo {

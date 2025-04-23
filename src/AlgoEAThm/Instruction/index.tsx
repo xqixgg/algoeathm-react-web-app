@@ -140,6 +140,17 @@ export default function Instruction() {
 
       {/* Main Form Section */}
       <div className="ins-container">
+        <video 
+          className="banner-video"
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+        >
+          <source src="/banner.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
         <nav className="algoEAThm-tabs">
           {/* Use NavLink so we can style the active tab */}
           <NavLink
