@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { useAuth } from "../store/AuthContext";
+// import { useAuth } from "../store/AuthContext";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,7 +19,7 @@ export default function AuthForm() {
   const navigate = useNavigate();
   const auth = getAuth();
   const db = getFirestore();
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,11 +40,11 @@ export default function AuthForm() {
       if (isLogin) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         // Fetch user data from Firestore
-        const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          // The username will be automatically set in the AuthContext through the onAuthStateChanged listener
-        }
+        await getDoc(doc(db, "users", userCredential.user.uid));
+        // if (userDoc.exists()) {
+        //   const userData = userDoc.data();
+        //   // The username will be automatically set in the AuthContext through the onAuthStateChanged listener
+        // }
         navigate("/AlgoEAThm");
       } else {
         const res = await createUserWithEmailAndPassword(auth, email, password);

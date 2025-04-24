@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { auth } from "../../firebase/config";
 import { useRecipe } from "../store/RecipeContext";
