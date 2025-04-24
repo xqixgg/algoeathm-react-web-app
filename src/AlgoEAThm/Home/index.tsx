@@ -30,17 +30,18 @@ const Home: React.FC = () => {
       const cuisine = state.cuisine?.trim() || "";
       const excludes = state.allergies?.split(",").map((i) => i.trim()) || [];
       const timeLimit = state.timeLimit?.trim() || "";
-
+      const dietaryRestrictions = state.dietaryRestrictions?.trim() || "";
       console.log("Sending API request with:", {
         ingredients,
         cuisine,
         excludes,
         timeLimit,
+        dietaryRestrictions,
       });
 
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/recipe`,
-        { ingredients, cuisine, excludes, timeLimit },
+        { ingredients, cuisine, excludes, timeLimit, dietaryRestrictions },
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: false,
@@ -118,7 +119,7 @@ const Home: React.FC = () => {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Home
+            Home <i className="fas fa-home custome-icon"></i>
           </NavLink>
           <NavLink
             to="/AlgoEAThm/Instruction"
@@ -126,7 +127,7 @@ const Home: React.FC = () => {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Instruction
+            Instruction <i className="fas fa-book custome-icon"></i>
           </NavLink>
           <NavLink
             to="/AlgoEAThm/saved-recipes"
@@ -134,7 +135,7 @@ const Home: React.FC = () => {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Saved Recipes
+            Saved Recipes <i className="fas fa-heart custome-icon"></i>
           </NavLink>
         </nav>
         <div className="mt-3">
@@ -184,6 +185,18 @@ const Home: React.FC = () => {
           placeholder="e.g., 30"
           value={state.timeLimit}
           onChange={(e) => handleInputChange("SET_TIME_LIMIT", e.target.value)}
+          className="algoEAThm-input"
+        />
+
+        <label htmlFor="dietaryRestrictions" className="algoEAThm-label">
+          Dietary Preferences (optional):
+        </label>
+        <input
+          id="dietaryRestrictions"
+          type="text"
+          placeholder="e.g., vegan, vegetarian, gluten-free"
+          value={state.dietaryRestrictions}
+          onChange={(e) => handleInputChange("SET_DIETARY_RESTRICTIONS", e.target.value)}
           className="algoEAThm-input"
         />
 

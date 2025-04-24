@@ -40,6 +40,7 @@ app.post("/recipe", async (req, res) => {
       cuisine = "",
       excludes = "",
       timeLimit = "",
+      dietaryRestrictions = "",
       timestamp,
     } = req.body;
 
@@ -48,6 +49,7 @@ app.post("/recipe", async (req, res) => {
       cuisine,
       excludes,
       timeLimit,
+      dietaryRestrictions,
       timestamp,
     });
 
@@ -59,7 +61,7 @@ app.post("/recipe", async (req, res) => {
     }
 
     // Validate that ingredients are not empty strings
-    const validIngredients = ingredients.filter(
+    let validIngredients = ingredients.filter(
       (ing) => ing && ing.trim().length > 0
     );
     if (validIngredients.length === 0) {
@@ -69,7 +71,7 @@ app.post("/recipe", async (req, res) => {
     }
 
     // Check for specific invalid ingredients
-    const invalidIngredients = validIngredients.filter((ing) =>
+    let invalidIngredients = validIngredients.filter((ing) =>
       ["abcdef", "asdasd"].includes(ing.toLowerCase().trim())
     );
     if (invalidIngredients.length > 0) {
@@ -86,6 +88,50 @@ app.post("/recipe", async (req, res) => {
         .status(400)
         .json({ error: "Please limit the number of ingredients to 10." });
     }
+
+    // Define incompatible ingredients for different dietary restrictions
+    const DIETARY_FILTERS = {
+      vegan: [
+        "meat", "chicken", "beef", "lamb", "pork", "fish", "egg", "cheese", "milk", "butter", "yogurt", "honey", "gelatin"
+      ],
+      vegetarian: [
+        "meat", "chicken", "beef", "lamb", "pork", "fish", "gelatin"
+      ],
+      "gluten-free": [
+        "wheat", "barley", "rye", "spelt", "malt", "semolina", "farro", "triticale", "bread", "pasta", "flour", "breadcrumbs"
+      ],
+      halal: [
+        "pork", "bacon", "ham", "gelatin", "alcohol", "beer", "wine", "rum", "whiskey"
+      ],
+      kosher: [
+        "pork", "shellfish", "shrimp", "lobster", "crab", "bacon", "ham", "gelatin", "cheeseburger", "meat and dairy combo"
+      ]
+    };
+
+    const dietaryRestrictionsLower = dietaryRestrictions.toLowerCase();
+    let removedIngredients = [];
+
+    Object.entries(DIETARY_FILTERS).forEach(([restriction, bannedList]) => {
+      if (dietaryRestrictionsLower.includes(restriction)) {
+        const beforeFilter = validIngredients.length;
+        validIngredients = validIngredients.filter((ing) => {
+          return !bannedList.some((banned) =>
+            ing.toLowerCase().includes(banned)
+          );
+        });
+        const afterFilter = validIngredients.length;
+
+        if (beforeFilter !== afterFilter) {
+          removedIngredients.push(restriction);
+        }
+      }
+    });
+
+    // Optional: Let the user know if anything was filtered out
+    if (removedIngredients.length > 0) {
+      console.log(`Filtered ingredients due to dietary restrictions: ${removedIngredients.join(", ")}`);
+    }
+
 
     // Add server-side validation for cuisine
     const validCuisines = [
@@ -133,6 +179,7 @@ app.post("/recipe", async (req, res) => {
         });
       }
     }
+    
 
     // Parse excludes into an array and filter out empty strings
     const excludeItems = excludes
@@ -226,6 +273,10 @@ app.post("/recipe", async (req, res) => {
 
     4. For time limit (if provided):
        - If not between 5 minutes and 24 hours, respond ONLY with "Invalid time limit: Please provide a reasonable cooking time between 5 minutes and 24 hours."
+    
+    5. For dietary restrictions (if provided):
+       - If ANY item is meaningless (like "abcdef", "asdasd", "123", "xyz", random letters, numbers), respond ONLY with "Invalid dietary preferences: Please provide actual dietary preferences."
+       - If it contradicts with anything within the ingredients, pass on that ingredient and use the rest of the ingredients to make the recipe.
 
     You MUST validate ALL inputs first. If ANY validation fails, respond ONLY with the corresponding error message. Do not generate a recipe if there are ANY invalid inputs.`;
 
@@ -239,6 +290,9 @@ app.post("/recipe", async (req, res) => {
     }
     if (timeLimit) {
       promptText += ` Make sure it can be prepared within ${timeLimit} minutes.`;
+    }
+    if (dietaryRestrictions) {
+      promptText += ` Dietary restrictions: ${dietaryRestrictions}. Conflicting ingredients such as pork, alcohol, shellfish, or mixed meat-dairy have been filtered out according to religious or dietary laws. Do NOT include ingredients that violate these restrictions.`;
     }
 
     // Add randomization based on timestamp
@@ -278,11 +332,12 @@ app.post("/recipe", async (req, res) => {
         recipeText.includes("Invalid ingredients:") ||
         recipeText.includes("Invalid cuisine:") ||
         recipeText.includes("Invalid time limit:") ||
-        recipeText.includes("Invalid excludes:")
+        recipeText.includes("Invalid excludes:") ||
+        recipeText.includes("Invalid dietary preferences:")
       ) {
         // Extract the full error message
         const errorMatch = recipeText.match(
-          /Invalid (?:ingredients|cuisine|time limit|excludes):[^.]*/
+          /Invalid (?:ingredients|cuisine|time limit|excludes|dietary preferences ):[^.]*/
         );
         const errorMessage = errorMatch ? errorMatch[0] : recipeText;
         console.log("Validation error detected:", errorMessage);

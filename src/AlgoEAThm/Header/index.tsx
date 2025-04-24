@@ -1,28 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { auth } from "../../firebase/config";
 import { useRecipe } from "../store/RecipeContext";
+import { useAuth } from "../store/AuthContext";
+
 const Header = () => {
   const navigate = useNavigate();
   const { dispatch } = useRecipe();
-  const [user, setUser] = React.useState<{ displayName: string; email: string | null } | null>(null);
-
-  React.useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // Get the username from email if displayName is not available
-        const username = user.displayName || user.email?.split('@')[0] || 'User';
-        setUser({
-          displayName: username,
-          email: user.email
-        });
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { currentUser, username } = useAuth();
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -50,9 +35,11 @@ const Header = () => {
         <h1 className="algoEAThm-title">AlgoEAThm</h1>
       </div>
       <div className="algoEAThm-rightSection">
-        {user ? (
+        {currentUser ? (
           <>
-            <span className="welcome-text">Welcome, {user.displayName}!</span>
+            <NavLink to="/AlgoEAThm/profile" className="welcome-text">
+              Welcome, {username}!
+            </NavLink>
             <button className="algoEAThm-AuthBtn" onClick={handleLogout}>
               Logout
             </button>

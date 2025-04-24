@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, getDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useAuth } from "../store/AuthContext";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,6 +19,7 @@ export default function AuthForm() {
   const navigate = useNavigate();
   const auth = getAuth();
   const db = getFirestore();
+  const { currentUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,8 +38,14 @@ export default function AuthForm() {
     }
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-        navigate("/Instruction");
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        // Fetch user data from Firestore
+        const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          // The username will be automatically set in the AuthContext through the onAuthStateChanged listener
+        }
+        navigate("/AlgoEAThm");
       } else {
         const res = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, "users", res.user.uid), {
@@ -46,8 +54,8 @@ export default function AuthForm() {
           savedRecipes: [],
           createdAt: serverTimestamp(),
         });
+        navigate("/AlgoEAThm", { replace: true });
       }
-      navigate("/AlgoEAThm", { replace: true });
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -103,6 +111,13 @@ export default function AuthForm() {
           required
         />
         <br />
+        {isLogin && (
+          <div className="forgot-password">
+            <NavLink to="/AlgoEAThm/forgot-password" className="forgot-password-link">
+              Forgot Password?
+            </NavLink>
+          </div>
+        )}
 
         {!isLogin && (
           <>

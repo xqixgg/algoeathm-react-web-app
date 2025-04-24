@@ -23,7 +23,7 @@ const Login: React.FC = () => {
       <div className="login-overlay"></div>
       <div className="login-content">
         <div className="logo-section">
-          <img src="5500.png" alt="AlgoEAThm Logo" className="algoEAThm-x-logo" />
+          <img src="/5500.png" alt="AlgoEAThm Logo" className="algoEAThm-x-logo" />
         </div>
         <div className="form-section">
           <h1

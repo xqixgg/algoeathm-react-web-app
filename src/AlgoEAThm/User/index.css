@@ -1,0 +1,233 @@
+.user-profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  padding-top: calc(2rem - 100px);
+  background-color: #f5f5f5;
+}
+
+.user-profile-card {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+}
+
+.user-profile-card h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+  margin-top: -0.5rem;
+}
+
+.profile-info {
+  margin-bottom: 2rem;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.info-item label {
+  font-weight: bold;
+  width: 100px;
+  color: #666;
+}
+
+.info-item span {
+  flex: 1;
+  color: #333;
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-link {
+  display: block;
+  padding: 0.8rem 1.5rem;
+  background-color: #FF5601;
+  color: #FFDFB8;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.profile-link:hover {
+  background-color: #e64d00;
+}
+
+.delete-account-btn {
+  padding: 0.8rem 1.5rem;
+  background-color: #FF5601;
+  color: #FFDFB8;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-account-btn:hover {
+  background-color: #e64d00;
+}
+
+.delete-account-btn:disabled {
+  background-color: #cccccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.password-prompt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.password-prompt form {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.password-prompt h3 {
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.password-prompt p {
+  margin-bottom: 1rem;
+  color: #666;
+  text-align: center;
+}
+
+.password-prompt input {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.password-prompt-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.password-prompt-actions button {
+  flex: 1;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  font-size: 1rem;
+}
+
+.password-prompt-actions .profile-link {
+  background-color: white;
+  color: #FF5601;
+  border: 1px solid #FF5601;
+}
+
+.password-prompt-actions .profile-link:hover {
+  background-color: #fff5f0;
+}
+
+.error-message {
+  color: #f44336;
+  text-align: center;
+  margin-bottom: 1rem;
+} 
+.delete-account-btn-cancel {
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 5px;
+
+}
+.delete-account-btn-cancel:hover {
+  background-color: #f0f0f0;
+}
+
+.profile-wrapper {
+    display: flex;
+    flex-direction: row;
+    min-height: calc(100vh - 80px);
+    width: 100%;
+  }
+  
+  /* Left side image wrapper */
+  .profile-img-wrapper {
+    width: 60%;
+    display: block;
+  }
+  
+  .profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  /* Right side: profile card container */
+  .user-profile-container {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: #f5f5f5;
+  }
+  
+  /* Profile card itself */
+  .user-profile-card {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Mobile styles: hide image and make card full-width */
+  @media (max-width: 1000px) {
+    .profile-wrapper {
+      flex-direction: column;
+    }
+  
+    .profile-img-wrapper {
+      display: none !important; /* 💥 force it to disappear */
+    }
+  
+    .user-profile-container {
+      width: 100%;
+      padding: 2rem 1rem;
+    }
+  
+    .user-profile-card {
+      max-width: 100%;
+    }
+  }

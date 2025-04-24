@@ -162,6 +162,19 @@ html, body {
     margin-right: 15px;
 }
 
+.welcome-text {
+    margin-right: 0.5rem;
+    color: #FF5601;
+    text-decoration: none;
+  }
+  
+  .welcome-text:hover {
+    text-decoration: underline;
+    color: #FF5601;
+  }
+  
+
+
 /* Media query for screens narrower than 480px */
 @media (max-width: 480px) {
     .algoEAThm-logo {
@@ -198,4 +211,9 @@ html, body {
   object-fit: cover;
   margin-bottom: 1rem;
   border-radius: 8px;
+}
+
+.custome-icon {
+  margin-left: 5px;
+  color: #ff5601;
 }

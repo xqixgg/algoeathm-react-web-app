@@ -24,6 +24,7 @@ interface SavedRecipe {
   allergies: string;
   cuisine: string;
   timeLimit: string;
+  dietaryRestrictions: string;
   createdAt: {
     seconds: number;
     nanoseconds: number;
@@ -73,6 +74,7 @@ export default function SavedRecipes() {
             allergies: data.allergies || "",
             cuisine: data.cuisine || "",
             timeLimit: data.timeLimit || "",
+            dietaryRestrictions: data.dietaryRestrictions || "",
             createdAt: data.createdAt || {
               seconds: Date.now() / 1000,
               nanoseconds: 0,
@@ -155,7 +157,7 @@ export default function SavedRecipes() {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Home
+            Home <i className="fas fa-home custome-icon"></i>
           </NavLink>
           <NavLink
             to="/AlgoEAThm/Instruction"
@@ -163,7 +165,7 @@ export default function SavedRecipes() {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Instruction
+            Instruction <i className="fas fa-book custome-icon"></i>
           </NavLink>
           <NavLink
             to="/AlgoEAThm/saved-recipes"
@@ -171,7 +173,7 @@ export default function SavedRecipes() {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Saved Recipes
+            Saved Recipes <i className="fas fa-heart custome-icon"></i>
           </NavLink>
         </nav>
 
@@ -214,6 +216,9 @@ export default function SavedRecipes() {
                     )}
                     {recipe.timeLimit && (
                       <span>Time: {recipe.timeLimit} min</span>
+                    )}
+                    {recipe.dietaryRestrictions && (
+                      <span>Dietary Restrictions: {recipe.dietaryRestrictions}</span>
                     )}
                   </div>
                   <button
@@ -271,6 +276,10 @@ export default function SavedRecipes() {
                         {selectedRecipe.timeLimit
                           ? `${selectedRecipe.timeLimit} minutes`
                           : "Not specified"}
+                      </p>
+                      <p>
+                        <strong>Dietary Restrictions:</strong>{" "}
+                        {selectedRecipe.dietaryRestrictions || "Not specified"}
                       </p>
                     </div>
                   </div>

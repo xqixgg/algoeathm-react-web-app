@@ -6,6 +6,7 @@ interface RecipeState {
   allergies: string;
   cuisine: string;
   timeLimit: string;
+  dietaryRestrictions: string;
   generatedRecipe: any;
   recipeHistory: any[]; // Add recipe history
 }
@@ -26,6 +27,7 @@ const loadState = (): RecipeState => {
         allergies: "",
         cuisine: "",
         timeLimit: "",
+        dietaryRestrictions: "",
         generatedRecipe: null,
         recipeHistory: [],
       };
@@ -38,6 +40,7 @@ const loadState = (): RecipeState => {
       allergies: "",
       cuisine: "",
       timeLimit: "",
+      dietaryRestrictions: "",
       generatedRecipe: null,
       recipeHistory: [],
     };
@@ -66,6 +69,9 @@ const recipeReducer = (
       break;
     case "SET_TIME_LIMIT":
       newState = { ...state, timeLimit: action.payload };
+      break;
+    case "SET_DIETARY_RESTRICTIONS":
+      newState = { ...state, dietaryRestrictions: action.payload };
       break;
     case "SET_GENERATED_RECIPE":
       newState = {

@@ -90,6 +90,7 @@ export default function Instruction() {
         allergies: state.allergies,
         cuisine: state.cuisine,
         timeLimit: state.timeLimit,
+        dietaryRestrictions: state.dietaryRestrictions,
         createdAt: serverTimestamp(),
       };
 
@@ -160,7 +161,7 @@ export default function Instruction() {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Home
+            Home <i className="fas fa-home custome-icon"></i>
           </NavLink>
           <NavLink
             to="/AlgoEAThm/Instruction"
@@ -168,7 +169,7 @@ export default function Instruction() {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Instruction
+            Instruction <i className="fas fa-book custome-icon"></i>
           </NavLink>
           <NavLink
             to="/AlgoEAThm/saved-recipes"
@@ -176,7 +177,7 @@ export default function Instruction() {
               isActive ? "algoEAThm-tab algoEAThm-tab-active" : "algoEAThm-tab"
             }
           >
-            Saved Recipes
+            Saved Recipes <i className="fas fa-heart custome-icon"></i>
           </NavLink>
         </nav>
         <div className="ins-topbar">
@@ -222,6 +223,10 @@ export default function Instruction() {
               <p className="ins-info">
                 <strong>Time Limit:</strong>{" "}
                 {state.timeLimit ? `${state.timeLimit} minutes` : "N/A"}
+              </p>
+              <p className="ins-info">
+                <strong>Dietary Restrictions:</strong>{" "}
+                {state.dietaryRestrictions || "Not specified"}
               </p>
             </div>
           </div>
