@@ -18,6 +18,7 @@ const Header = () => {
         dispatch({ type: "SET_ALLERGIES", payload: "" });
         dispatch({ type: "SET_CUISINE", payload: "" });
         dispatch({ type: "SET_TIME_LIMIT", payload: "" });
+        dispatch({ type: "SET_DIETARY_RESTRICTIONS", payload: "" });
         
         await auth.signOut();
         navigate("/AlgoEAThm");
